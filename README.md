@@ -1,5 +1,5 @@
 # Research Project
-by Reiya and Gabriel
+By Reiya and Gabriel
 
 ## OverView
 We are developing a remote access tool (RAT)
@@ -16,6 +16,7 @@ We are developing a remote access tool (RAT)
     - applications
 - Privilege escalation
 - Worm
+- VM detector
 
 ## Roadmap
 - initial script

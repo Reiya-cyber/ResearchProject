@@ -1,35 +1,41 @@
 # Research Project
-by Reiya Ihara and Gabriel Paquette
-## OverView
-We are developitn a remote access tool (RAT)
+by Reiya and Gabriel
 
-## Resources
+## OverView
+We are developing a remote access tool (RAT)
 
 ## Components
 - Keylogger
 - Screen shots
-- exfiltration
+- Exfiltration
     - stealing documents
-- remote access
-- credentials
+- Remote access
+- Credential dump
     - computer
     - web
     - applications
-- privilege escalation
-- worm
+- Privilege escalation
+- Worm
 
 ## Roadmap
 - initial script
-    - create a staging script
+    - Download a staging script from github repo
     - execute the staging script
     - self-deletion
 - staging script
     - download needed files from github repo
-        - keylogger
-        - screenshots
-        - credential dump
-- develop keylogger
+        - Windowns defender disabler (or remover)
+        - Keylogger
+        - Screenshots
+        - Credential dump
+        - Remote access 
+- develop tools
+    - keylogger
+    - Screenshots taker
 - obfuscation
     - av protection
     - vm desction
     - disabling firewall and windows defender
+
+## Resources
+- https://github.com/ionuttbara/windows-defender-remover/tree/main

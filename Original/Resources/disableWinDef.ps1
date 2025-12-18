@@ -25,3 +25,4 @@ try {
     Write-Error "Failed to disable Defender. Is Tamper Protection enabled?"
 }
 
+Remove-Item disableWinDef.ps1

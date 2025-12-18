@@ -1,4 +1,6 @@
 @echo off
+@REM Evil research project starting point
+@REM test initial stager for RAT
 @REM initial stager for RAT
 
 @REM varialbes

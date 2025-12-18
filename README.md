@@ -67,49 +67,36 @@ We are developing a remote access tool (RAT)
     - vm desction
     - disabling firewall and windows defender
 
-## Workflow
-This project follows a multi-stage architecture to study Remote Access Tool behavior, privilege escalation, and defensive control interaction in controlled environments.
+## Infection Workflow
 
-### Stage 1: Initial Entry (initial.cmd)
-- **initial.cmd** serves as the initial execution vector.
-Its responsibility is to initiate the workflow and retrieve the next-stage component.
+This section describes the initial infection and persistence mechanism simulated in this research project. The workflow is designed to demonstrate common techniques used in real-world malware for staging, privilege escalation, and defense evasion. **All steps are for educational analysis only and should never be executed outside isolated lab environments.**
 
-- Persistence mechanisms are introduced to ensure continuity after reboot.
+### Step-by-Step Flow
 
-- Once the handoff is complete, the script removes itself to minimize artifacts.
+1. **Initial Execution**  
+   The process begins with the execution of `initial.cmd` on the target (victim) machine. This script is placed in a location that ensures startup execution (e.g., via user interaction or prior compromise in a lab setting).
 
-### Stage 2: Staging (wget.cmd)
-- **wget.cmd** functions as the staging script.
+2. **Downloader Staging**  
+   `initial.cmd` downloads `wget.cmd` and saves it directly to the user's Startup folder for persistence.
 
-- It retrieves additional research components required for later stages.
+3. **Payload Download**  
+   `wget.cmd` then downloads the main staging script `installer.ps1` from a remote location (e.g., a controlled GitHub repository in research simulations).
 
-- This script coordinates the execution order of subsequent payloads.
+4. **Persistence and Evasion Setup**  
+   `installer.ps1` performs the following actions:  
+   - Creates a temporary directory with a random name under `%TEMP%` for staging additional components.  
+   - Downloads two defense evasion tools to the Startup folder:  
+     - `disableWinDef.ps1`  
+     - `defender_remover.exe` (based on public research tools, see Resources section)
 
-- Elevated privileges may be requested at this stage to enable system-level research actions.
+5. **Privilege Escalation and Execution**  
+   `wget.cmd` is configured to trigger a UAC prompt, requesting administrative privileges. Upon approval (simulated in lab tests), it executes:  
+   - `disableWinDef.ps1`: Temporarily disables Windows Defender real-time protection and adds exclusions for `defender_remover.exe`.  
+   - `defender_remover.exe`: Permanently disables or removes Windows Defender components and UAC prompts to facilitate further stages (e.g., payload deployment).
 
-### Stage 3: Installer & Environment Setup (installer.ps1)
-- **installer.ps1** prepares the runtime environment for the project.
+This chain achieves persistence across reboots, elevates privileges, and evades basic endpoint protection—highlighting the importance of strong defenses like tamper protection, restricted script execution, and monitoring for suspicious downloads.
 
-- It creates temporary working directories using randomized names.
-
-- Additional research files are placed in predefined locations to support persistence and execution.
-
-- This script acts as the central orchestrator for the setup phase.
-
-### Stage 4: Defensive Interaction Scripts
-
-**disableWinDef.ps1**
-- Temporarily modifies Windows Defender behavior for research observation purposes.
-
-- Used to study how endpoint protection reacts to staged threats.
-
-- Creates exclusions for executing experimental binaries.
-
- **defender_remover.exe**
-
-- Experimental binary used to analyze system behavior when core security components are absent.
-
-- Enables post-compromise research such as persistence and long-term access analysis.
+**Note**: Subsequent stages (e.g., keylogger, screenshots, remote access) would be deployed after successful evasion, as outlined in the Roadmap.
 
 ## Resources
 - https://github.com/ionuttbara/windows-defender-remover/tree/main

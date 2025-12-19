@@ -20,4 +20,4 @@ powershell ./wget.cmd
 
 @REM cd back into initial Location
 cd "%INITIALPATH%"
-@REM del initial.cmd
+del initial3_risk.cmd

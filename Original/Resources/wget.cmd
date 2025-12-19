@@ -30,4 +30,5 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "installer.ps1"
 powershell -ExecutionPolicy Bypass -File "disableWinDef.ps1"
 defender_remover.exe Y
 
+del disableWinDef.ps1
 del wget.cmd

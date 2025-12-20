@@ -98,5 +98,55 @@ This chain achieves persistence across reboots, elevates privileges, and evades 
 
 **Note**: Subsequent stages (e.g., keylogger, screenshots, remote access) would be deployed after successful evasion, as outlined in the Roadmap.
 
+## Setups
+### Network Configuration (Kali Linux)
+
+This project assumes Kali Linux is configured with a **static IPv4 address** on an **internal network adapter** for isolated lab communication.
+
+#### Network layout
+- **Adapter 1**: NAT / Bridged (Internet access, DHCP)
+- **Adapter 2**: Internal Network (Lab communication, Static IP)
+
+Kali static IPv4 address: 192.168.0.1/24
+
+
+#### 1, Identify network interfaces
+List available interfaces and NetworkManager connections:
+```bash
+ip a
+nmcli device status
+nmcli connection show
+```
+#### 2, Bind the internal connection to the internal interface
+```bash
+sudo nmcli connection modify "Wired connection 2" connection.interface-name eth1
+```
+#### 3, Configure static IPv4 address
+```bash
+sudo nmcli connection modify "Wired connection 2" \
+  ipv4.method manual \
+  ipv4.addresses 192.168.0.1/24 \
+  ipv4.gateway "" \
+  ipv4.dns "" \
+  ipv4.never-default yes
+```
+#### 4, Apply the configuration
+```bash
+sudo nmcli connection down "Wired connection 2"
+sudo nmcli connection up "Wired connection 2"
+```
+
+### Network Configuration (Windows 11)
+
+This project assumes the Windows 11 test machine is connected to the **same internal network** as Kali Linux using a **static IPv4 address**.  
+This enables isolated lab communication without exposing services to external networks.
+
+#### Network layout
+- **Adapter 1**: NAT / Bridged (Internet access, DHCP)
+- **Adapter 2**: Internal Network (Lab communication, Static IP)
+
+Windows 11 static IPv4 address: Any address on 192.168.0.0/24 (exept for 192.168.0.1)
+ 
+
 ## Resources
 - https://github.com/ionuttbara/windows-defender-remover/tree/main

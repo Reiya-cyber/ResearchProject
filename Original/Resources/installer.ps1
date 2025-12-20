@@ -68,4 +68,34 @@ New-ItemProperty `
     -Value 0 `
     -Force | Out-Null
 
+
+# Install OpenSSH Server if not installed
+$sshServer = Get-WindowsCapability -Online | Where-Object Name -like 'OpenSSH.Server*'
+
+if ($sshServer.State -ne "Installed") {
+    Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+} 
+
+# Set SSH service to start automatically
+Set-Service -Name sshd -StartupType Automatic
+
+# Start SSH service
+Start-Service sshd
+
+# Enable firewall rule
+if (-not (Get-NetFirewallRule -Name "OpenSSH-Server-In-TCP" -ErrorAction SilentlyContinue)) {
+    New-NetFirewallRule `
+        -Name "OpenSSH-Server-In-TCP" `
+        -DisplayName "OpenSSH Server (SSH)" `
+        -Enabled True `
+        -Direction Inbound `
+        -Protocol TCP `
+        -Action Allow `
+        -LocalPort 22
+} else {
+    Enable-NetFirewallRule -Name "OpenSSH-Server-In-TCP"
+}
+
+
+    
 Remove-Item installer.ps1

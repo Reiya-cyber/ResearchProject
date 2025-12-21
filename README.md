@@ -110,18 +110,18 @@ This project assumes Kali Linux is configured with a **static IPv4 address** on 
 Kali static IPv4 address: 192.168.0.1/24
 
 
-#### 1, Identify network interfaces
+#### 1. Identify network interfaces
 List available interfaces and NetworkManager connections:
 ```bash
 ip a
 nmcli device status
 nmcli connection show
 ```
-#### 2, Bind the internal connection to the internal interface
+#### 2. Bind the internal connection to the internal interface
 ```bash
 sudo nmcli connection modify "Wired connection 2" connection.interface-name eth1
 ```
-#### 3, Configure static IPv4 address
+#### 3. Configure static IPv4 address
 ```bash
 sudo nmcli connection modify "Wired connection 2" \
   ipv4.method manual \
@@ -130,7 +130,7 @@ sudo nmcli connection modify "Wired connection 2" \
   ipv4.dns "" \
   ipv4.never-default yes
 ```
-#### 4, Apply the configuration
+#### 4. Apply the configuration
 ```bash
 sudo nmcli connection down "Wired connection 2"
 sudo nmcli connection up "Wired connection 2"
@@ -146,7 +146,19 @@ This enables isolated lab communication without exposing services to external ne
 - **Adapter 2**: Internal Network (Lab communication, Static IP)
 
 Windows 11 static IPv4 address: Any address on 192.168.0.0/24 (exept for 192.168.0.1)
- 
 
+### Running the Receiver on Kali
+1. Navigate to the project directory
+```bash
+cd ~/Research_Project/Attacker
+```
+2. Start the receiver
+``` bash
+python3 receiver.py
+```
+3. Expected Output
+```output
+Listening on port 8080...
+```
 ## Resources
 - https://github.com/ionuttbara/windows-defender-remover/tree/main

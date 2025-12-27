@@ -25,6 +25,7 @@ exit /B
 :gotAdmin
 cd /d "%~dp0"
 
+@REM Enable WIN-RM
 powershell -WindowStyle Hidden -NoProfile -ExecutionPolicy Bypass -Command ^
     "try { winrm quickconfig -quiet; Enable-PSRemoting -Force -SkipNetworkProfileCheck -ErrorAction Stop } catch { Write-Output 'WinRM already configured or failed'; Start-Sleep -Seconds 3 }"
 

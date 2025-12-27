@@ -64,14 +64,6 @@ if (-not $userExists) {
 # disable firewalls
 Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
 
-# # Check WinRM service status
-# $winrmService = Get-Service -Name WinRM -ErrorAction SilentlyContinue
-
-# if ($winrmService -and $winrmService.Status -ne 'Running') {
-#     Enable-PSRemoting -Force
-# }
-
-
 # Make a sender file under the random temp folder
 $filePath = Join-Path $dirPath "sender.ps1"
 

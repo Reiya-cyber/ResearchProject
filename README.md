@@ -79,6 +79,7 @@ This file is typically delivered via user interaction, phishing simulation, or p
 
 ### 2. Evasion Preparation
 A downloader script (e.g., `wget.cmd`) performs the following:
+- Enables **WinRM** (Windows Remote Management) to allow remote PowerShell access.
 - Downloads `disableWinDef.ps1`.
 - Executes `disableWinDef.ps1` to proactively add Windows Defender exclusions for:
   - `installer.ps1`
@@ -103,7 +104,7 @@ Both downloaded files are executed (typically triggering a UAC prompt for elevat
 - Generates `sender.ps1` inside this directory. This script contains the core logic for communication with the attacker-controlled machine (e.g., beaconing, command execution, data exfiltration).
 - Creates a **scheduled task** to execute `sender.ps1` persistently (e.g., at logon or on a recurring schedule).
 - Creates a new local administrative account named `Adm1nistartor` (hidden backdoor account).
-- Enables **WinRM** (Windows Remote Management) to allow remote PowerShell access.
+
 
 ## Key Techniques Demonstrated
 - Early Defender exclusion to bypass real-time scanning

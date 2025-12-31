@@ -2,6 +2,7 @@ import subprocess
 import sys
 import socket
 import getpass
+import platform
 
 BANNER = r"""
 :::::::::  :::::::::: ::::::::  ::::::::::     :::     :::::::::   ::::::::  :::    :::          :::::::::  :::::::::   ::::::::  ::::::::::: :::::::::: :::::::: :::::::::::
@@ -42,6 +43,22 @@ def connect_evil_winrm(target_ip):
     ]
     subprocess.run(cmd)
 
+def ping_target(target_ip, count=1, timeout=2):
+    system = platform.system().lower()
+
+    if system == "windows":
+        cmd = ["ping", "-n", str(count), "-w", str(timeout * 1000), target_ip]
+    else:
+        cmd = ["ping", "-c", str(count), "-W", str(timeout), target_ip]
+
+    result = subprocess.run(
+        cmd,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL
+    )
+
+    return result.returncode == 0
+
 def check_connection(target_ip, timeout=3):
     ports = {
         5985: "WinRM (HTTP)",
@@ -49,6 +66,12 @@ def check_connection(target_ip, timeout=3):
     }
 
     print(f"[*] Checking Connection to {target_ip}...")
+
+    if not ping_target(target_ip):
+        print("[-] Ping failed. Host may be down or ICMP blocked.")
+        return
+
+    print("[+] Ping successful. Host is reachable.\n")
 
     for port, name in ports.items():
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

@@ -173,18 +173,28 @@ This enables isolated lab communication without exposing services to external ne
 
 Windows 11 static IPv4 address: Any address on 192.168.0.0/24 (exept for 192.168.0.1)
 
-### Running the Receiver on Kali
+### Running the console on Kali
 1. Navigate to the project directory
 ```bash
 cd ~/Research_Project/Attacker
 ```
 2. Start the receiver
 ``` bash
-python3 receiver.py
+python3 main.py
 ```
 3. Expected Output
 ```output
-Listening on port 8080...
+:::::::::  :::::::::   ::::::::  ::::::::::: :::::::::: :::::::: :::::::::::
+:+:    :+: :+:    :+: :+:    :+:     :+:     :+:       :+:    :+:    :+:
++:+    +:+ +:+    +:+ +:+    +:+     +:+     +:+       +:+           +:+
++#++:++#+  +#++:++#:  +#+    +:+     +#+     +#++:++#  +#+           +#+
++#+        +#+    +#+ +#+    +#+     +#+     +#+       +#+           +#+
+#+#        #+#    #+# #+#    #+# #+# #+#     #+#       #+#    #+#    #+#
+###        ###    ###  ########   #####      ########## ########     ###
+
+[*] Type help or h to see all commands...
+
+username@ResearchProject#
 ```
 ## Resources
 - https://github.com/ionuttbara/windows-defender-remover/tree/main

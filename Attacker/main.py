@@ -5,13 +5,13 @@ import getpass
 import platform
 
 BANNER = r"""
-:::::::::  :::::::::: ::::::::  ::::::::::     :::     :::::::::   ::::::::  :::    :::          :::::::::  :::::::::   ::::::::  ::::::::::: :::::::::: :::::::: :::::::::::
-:+:    :+: :+:       :+:    :+: :+:          :+: :+:   :+:    :+: :+:    :+: :+:    :+:          :+:    :+: :+:    :+: :+:    :+:     :+:     :+:       :+:    :+:    :+:     
-+:+    +:+ +:+       +:+        +:+         +:+   +:+  +:+    +:+ +:+        +:+    +:+          +:+    +:+ +:+    +:+ +:+    +:+     +:+     +:+       +:+           +:+      
-+#++:++#:  +#++:++#  +#++:++#++ +#++:++#   +#++:++#++: +#++:++#:  +#+        +#++:++#++          +#++:++#+  +#++:++#:  +#+    +:+     +#+     +#++:++#  +#+           +#+       
-+#+    +#+ +#+              +#+ +#+        +#+     +#+ +#+    +#+ +#+        +#+    +#+          +#+        +#+    +#+ +#+    +#+     +#+     +#+       +#+           +#+        
-#+#    #+# #+#       #+#    #+# #+#        #+#     #+# #+#    #+# #+#    #+# #+#    #+#          #+#        #+#    #+# #+#    #+# #+# #+#     #+#       #+#    #+#    #+#         
-###    ### ########## ########  ########## ###     ### ###    ###  ########  ###    ###          ###        ###    ###  ########   #####      ########## ########     ###   
+:::::::::  :::::::::   ::::::::  ::::::::::: :::::::::: :::::::: ::::::::::: 
+:+:    :+: :+:    :+: :+:    :+:     :+:     :+:       :+:    :+:    :+:     
++:+    +:+ +:+    +:+ +:+    +:+     +:+     +:+       +:+           +:+     
++#++:++#+  +#++:++#:  +#+    +:+     +#+     +#++:++#  +#+           +#+     
++#+        +#+    +#+ +#+    +#+     +#+     +#+       +#+           +#+     
+#+#        #+#    #+# #+#    #+# #+# #+#     #+#       #+#    #+#    #+#     
+###        ###    ###  ########   #####      ########## ########     ###     
 """
 
 USERNAME = "Adm1nistrator"
@@ -69,7 +69,7 @@ def check_connection(target_ip, timeout=3):
 
     if not ping_target(target_ip):
         print("[-] Ping failed. Host may be down or ICMP blocked.")
-        return
+        return None
 
     print("[+] Ping successful. Host is reachable.\n")
 
@@ -88,6 +88,7 @@ def check_connection(target_ip, timeout=3):
             print(f"[-] {name} port {port} error: {e}")
         finally:
             sock.close()
+    return target_ip
 
 
 def cli():
@@ -101,6 +102,7 @@ def cli():
         evil-winrm     Connect to target using evil-winrm
         key-logger     To be determined
         screen-shot    To be determined
+        dump           Credentials dump
         exit, q        Exit the console
     """
     print("[*] Type help or h to see all commands...\n")
@@ -126,12 +128,15 @@ def cli():
             if not current_target:
                 print("[-] No target connected. Use 'listen' first.")
             else:
-                connect_evil_winrm(current_target)
+                current_target = connect_evil_winrm(current_target)
 
         elif cmd == "key-logger":
             print("In progress...")
 
         elif cmd == "screen-shot":
+            print("In progress...")
+        
+        elif cmd == "dump":
             print("In progress...")
 
         elif cmd == "":

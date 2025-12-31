@@ -44,6 +44,7 @@ def connect_evil_winrm(target_ip):
 def main():
     print(BANNER)
     target_ip = start_listener()
+    connect_evil_winrm(target_ip)
 
 if __name__ == "__main__":
     main()

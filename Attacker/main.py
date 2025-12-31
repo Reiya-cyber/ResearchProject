@@ -90,11 +90,13 @@ def check_connection(target_ip, timeout=3):
             sock.close()
 
 
-def cli(target_ip):
+def cli():
     username = getpass.getuser()
+    current_target = None
     help_text = """
         Available commands:
         help, h        Show this help menu
+        listen         Start listening for a target
         check          Check target connectivity (WinRM ports)
         evil-winrm     Connect to target using evil-winrm
         key-logger     To be determined
@@ -105,19 +107,36 @@ def cli(target_ip):
     while True:
         cmd = input(f"{username}@ResearchProject# ")
         if cmd == "exit" or cmd == "q":
+            print("[+] Exiting console.")
             break
+
         elif cmd == "help" or cmd == "h":
             print(help_text)
+
+        elif cmd == "listen":
+            current_target = start_listener()
+
         elif cmd == "check":
-            check_connection(target_ip)
+            if not current_target:
+                print("[-] No target connected. Use 'listen' first.")
+            else:
+                check_connection(current_target)
+
         elif cmd == "evil-winrm":
-            connect_evil_winrm(target_ip)
+            if not current_target:
+                print("[-] No target connected. Use 'listen' first.")
+            else:
+                connect_evil_winrm(current_target)
+
         elif cmd == "key-logger":
             print("In progress...")
+
         elif cmd == "screen-shot":
             print("In progress...")
+
         elif cmd == "":
             continue
+
         else:
             print(f"[-] Unknown command: {cmd}")
 
@@ -125,8 +144,7 @@ def cli(target_ip):
 def main():
     print(BANNER)
     try:
-        target_ip = start_listener()
-        cli(target_ip)
+        cli()
     except KeyboardInterrupt:
         print("\n[!] Stopped by user.")
     

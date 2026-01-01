@@ -4,6 +4,7 @@ import socket
 import getpass
 import platform
 import base64
+import winrm
 from datetime import datetime
 
 BANNER = r"""

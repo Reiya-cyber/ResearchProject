@@ -141,7 +141,7 @@ def cli():
         check          Check target connectivity (WinRM ports)
         evil-winrm     Connect to target using evil-winrm
         key-logger     To be determined
-        screen-shot    To be determined
+        screen-shot    Take screenshot
         dump           Credentials dump
         exit, q        Exit the console
     """
@@ -174,7 +174,10 @@ def cli():
             print("In progress...")
 
         elif cmd == "screen-shot":
-            print("In progress...")
+            if not current_target:
+                print("[-] No target connected. Use 'listen' first.")
+            else:
+                screenshot(current_target)
         
         elif cmd == "dump":
             print("In progress...")

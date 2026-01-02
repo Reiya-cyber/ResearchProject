@@ -123,7 +123,7 @@ def screenshot(target_ip):
         print("[-] Screenshot failed")
         return
     
-    img_data = base64.b64decode(result.stdout)
+    img_data = base64.b64decode(result.std_out)
 
     filename = f"screenshot_{target_ip}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
     with open(filename, "wb") as f:

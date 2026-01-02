@@ -100,7 +100,7 @@ def screenshot(target_ip):
         REMOTE_FILE = "C:\\Users\\Public\\screen.png"
         LOCAL_DIR = "./Box"
         cmd = [
-            EVIL_WINRM,
+            "evil-winrm",
             "-i", target_ip,
             "-u", USERNAME,
             "-p", PASSWORD,
@@ -112,7 +112,7 @@ def screenshot(target_ip):
 
         print("[*] Downloading screenshot...")
         cmd = [
-            EVIL_WINRM,
+            "evil-winrm",
             "-i", target_ip,
             "-u", USERNAME,
             "-p", PASSWORD,

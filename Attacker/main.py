@@ -117,7 +117,7 @@ def screenshot(target_ip):
 
         print("[*] Downloading screenshot...")
         
-        payload = f'download {REMOTE_FILE} {LOCAL_FILE}'
+        payload = f'download "{REMOTE_FILE}" "{LOCAL_FILE}"'
 
         subprocess.run(
             ["evil-winrm", "-i", target_ip, "-u", USERNAME, "-p", PASSWORD],

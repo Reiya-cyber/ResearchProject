@@ -241,4 +241,7 @@ python3 main.py
 username@ResearchProject#
 ```
 ## Resources
-- https://github.com/ionuttbara/windows-defender-remover/tree/main
+- https://github.com/CosmodiumCS/MK01-OnlyRAT/tree/main (Basic Workflow idea)
+- https://github.com/ionuttbara/windows-defender-remover/tree/main (Defender Remover)
+- https://github.com/microsoft/terminal/issues/16072 (UAC prompt)
+- https://github.com/Hackplayers/evil-winrm (Evil Winrm)

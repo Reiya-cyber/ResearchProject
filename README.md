@@ -1,5 +1,5 @@
 # Research Project
-By Reiya-Cyber and Gabriel
+By Reiya-Cyber and Hexahydride2
 
 ## ⚠️ Disclaimer & Educational Use Only
 
@@ -31,7 +31,9 @@ Use this project **only in controlled environments**, such as:
 ---
 
 ## OverView
-We are developing a remote access tool (RAT)
+# Remote Access Tool (RAT) Development
+
+This project is an educational red team simulation demonstrating the development and operation of a custom Remote Access Tool (RAT) using scripts and programming languages such as Powershell on the victim side and a Python-based CLI console on the attacker side (Kali Linux). It illustrates realistic techniques for initial access, defense evasion, persistence, reverse beaconing, and interactive post-exploitation, strictly within isolated lab environments. Key capabilities include bypassing Windows Defender via early exclusions, enabling WinRM for remote access, creating a hidden backdoor account, and capturing screenshots in the user's session through a scheduled task named "WindowsDisplayUpdate". The attacker-side Python console detects online victims via reverse beacons and provides a menu-driven interface with options like remote-connection (using evil-winrm), screenshot retrieval, credential dumping, and keylogger deployment. The simulation employs living-off-the-land techniques with native Windows tools and PowerShell to highlight modern persistence and post-exploitation methods. This project is intended solely for research, red team training, and enhancing blue team detection and hardening strategies.
 
 ## Components
 - Keylogger

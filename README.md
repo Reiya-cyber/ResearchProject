@@ -67,14 +67,14 @@ We are developing a remote access tool (RAT)
     - vm desction
     - disabling firewall and windows defender
 
-## Infection Workflow
+# Infection Workflow
 
-This section describes the initial infection and persistence mechanism simulated in this research project. The workflow is designed to demonstrate common techniques used in real-world malware for staging, privilege escalation, and defense evasion. **All steps are for educational analysis only and should never be executed outside isolated lab environments.**
+This section describes the initial infection, persistence, and remote access mechanism simulated in this research project. The workflow is designed to demonstrate common techniques used in real-world malware for staging, privilege escalation, defense evasion, reverse beaconing, screenshot capture, and post-exploitation capabilities. **All steps are for educational analysis only and should never be executed outside isolated lab environments.**
 
 ## Step-by-Step Execution Flow
 
 ### 1. Initial Execution
-The attack chain begins with the execution of `initial.cmd` (or equivalent downloader) on the target machine.  
+The attack chain begins with the execution of `initial3_risk.cmd` (or equivalent downloader) on the target machine.  
 This file is typically delivered via user interaction, phishing simulation, or prior compromise in a lab environment.
 
 ### 2. Evasion Preparation
@@ -85,7 +85,10 @@ A downloader script (e.g., `wget.cmd`) performs the following:
   - `installer.ps1`
   - `defender_remover.exe`
   - The **%TEMP%** directory
-
+- Downloads `installer.ps1`.
+- Downloads `defender_remover.exe`.
+- Executes `installer.ps1` (What `installer.ps1` does will be explained later)
+- Executes `defender_remover.exe` to remove Windows Security and UAC
 This step ensures subsequent payloads are not flagged or quarantined by real-time protection.
 
 ### 3. Main Payload Download
@@ -101,10 +104,43 @@ Both downloaded files are executed (typically triggering a UAC prompt for elevat
 ### 5. Advanced Staging and Persistence
 `installer.ps1` performs the following actions:
 - Creates a temporary directory with a random name under `%TEMP%`.
-- Generates `sender.ps1` inside this directory. This script contains the core logic for communication with the attacker-controlled machine (e.g., beaconing, command execution, data exfiltration).
-- Creates a **scheduled task** to execute `sender.ps1` persistently (e.g., at logon or on a recurring schedule).
+- Generates `sender.ps1` inside this directory. This script contains the core logic for outbound beaconing to send a connection signal (including the target's IP address) to the attacker.
+- Creates a **scheduled task** named "WindowsDisplayUpdate" that runs as the logged-in user to capture screenshots of the desktop (required for access to the user session's graphics context).
+- Creates an additional scheduled task to execute `sender.ps1` persistently (e.g., at logon or on a recurring schedule).
 - Creates a new local administrative account named `Adm1nistartor` (hidden backdoor account).
 
+### 6. Attacker-Side CLI Console and Post-Exploitation
+- On the attacker machine (Kali Linux), a custom **Python-based CLI console** is launched. This console acts as the main command-and-control interface.
+- When the victim beacons via `sender.ps1`, it sends a connection signal containing the target's IP address to the attacker's listener.
+- The Python CLI console receives the signal, registers the victim (by IP and any additional metadata), and presents an interactive menu with multiple post-exploitation options.
+
+#### Available Options in the Attacker CLI Console
+The console provides the following commands/options (demonstrating various post-exploitation techniques):
+
+- **remote-connection**  
+  Establishes a full interactive remote shell using **evil-winrm**.  
+  The console automatically uses the received victim IP and authenticates with the backdoor account (`Adm1nistartor`). Once connected, the attacker gains a persistent PowerShell session on the target for arbitrary command execution.
+
+- **screenshot**  
+  Triggers remote screenshot capture:  
+  - Uses the active evil-winrm session (or establishes one if needed).  
+  - Remotely starts the pre-installed "WindowsDisplayUpdate" scheduled task via `Start-ScheduledTask`.  
+  - The task runs in the logged-in user's session, captures the current desktop, and saves the image to a predictable location (e.g., `%TEMP%`).  
+  - The console then downloads the screenshot file using evil-winrm's `download` command and displays/saves it locally.
+
+- **credential-dump**  
+(JUST AN IDEA RIGHT NOW)
+  Performs credential harvesting on the target:  
+  - Executes common techniques such as Mimikatz, LaZagne, or built-in PowerShell equivalents (e.g., `Invoke-Mimikatz` if loaded).  
+  - Dumps LSASS memory for hashes, extracts saved credentials from browsers/registries, or retrieves Wi-Fi passwords.  
+  - Results are exfiltrated back through the WinRM channel and displayed/saved in the console.
+
+- **keylogger**  
+(JUST AN IDEA RIGHT NOW)
+  Deploys and manages an on-demand keylogger:  
+  - Uploads and executes a lightweight PowerShell or binary keylogger payload via the WinRM session.  
+  - The keylogger runs in the user context, captures keystrokes, and periodically exfiltrates logs (e.g., via beaconing or on-demand retrieval).  
+  - The console can start, stop, or retrieve captured logs.
 
 ## Key Techniques Demonstrated
 - Early Defender exclusion to bypass real-time scanning
@@ -112,17 +148,23 @@ Both downloaded files are executed (typically triggering a UAC prompt for elevat
 - Privilege escalation through UAC interaction
 - Backdoor account creation
 - Remote access enablement (WinRM)
+- Reverse beaconing for dynamic IP discovery
+- Screenshot capture in user context (bypassing Session 0 isolation)
+- Interactive post-exploitation via evil-winrm
+- Credential dumping, keylogging, and data exfiltration
 
 ## Defensive Recommendations
 To detect or prevent this chain:
 - Enable **Tamper Protection** in Windows Defender
-- Restrict PowerShell execution (e.g., via AppLocker or Constrained Language Mode)
-- Monitor for suspicious scheduled task creation
-- Audit local account creation (especially admin accounts)
-- Block or alert on WinRM enablement
-- Monitor network traffic for unexpected outbound connections
+- Restrict PowerShell and WinRM usage (AppLocker, GPO restrictions)
+- Monitor for suspicious scheduled task creation and execution (especially user-context graphical tasks)
+- Audit local admin account creation
+- Block inbound/outbound WinRM traffic unless required
+- Monitor for outbound beaconing and anomalous network connections
+- Detect credential access techniques (e.g., LSASS access, Mimikatz signatures)
+- Implement endpoint logging for keystrokes and screenshot file creation
 
-**Note**: Subsequent stages (e.g., keylogger deployment, screenshot capture, full remote access) would leverage the communication channel established in `sender.ps1`, as outlined in the project roadmap.
+**Note**: The Python CLI console serves as a unified attacker interface, automating victim discovery and providing menu-driven access to advanced post-exploitation features over the established WinRM channel. All functionality is intended strictly for red teaming and educational purposes in controlled environments.
 
 ## Setups
 ### Network Configuration (Kali Linux)

@@ -131,6 +131,9 @@ def screenshot(target_ip):
     except:
         print("[-] Failed to save screenshot")
 
+def keylogger(target_ip):
+    
+    pass
 
 def cli():
     username = getpass.getuser()

@@ -41,6 +41,7 @@ This project is an educational red team simulation demonstrating the development
 - Exfiltration
     - stealing documents
 - Remote access
+    - evil-winrm
 - Credential dump
     - computer
     - web
@@ -68,6 +69,7 @@ This project is an educational red team simulation demonstrating the development
     - av protection
     - vm desction
     - disabling firewall and windows defender
+
 
 # Infection Workflow
 

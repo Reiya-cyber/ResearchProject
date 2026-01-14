@@ -247,3 +247,4 @@ username@ResearchProject#
 - https://github.com/ionuttbara/windows-defender-remover/tree/main (Defender Remover)
 - https://github.com/microsoft/terminal/issues/16072 (UAC prompt)
 - https://github.com/Hackplayers/evil-winrm (Evil Winrm)
+- https://github.com/ParrotSec/mimikatz (Mimikatz)

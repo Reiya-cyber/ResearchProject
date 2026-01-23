@@ -264,6 +264,21 @@ python3 main.py
 
 [*] Type help or h to see all commands...
 
+username@ResearchProject# help
+
+        Available commands:
+        help, h        Show this help menu
+        set            Set a target IP address
+        show           Show current target
+        listen         Start listening for a target
+        check          Check target connectivity (WinRM ports)
+        evil-winrm     Connect to target using evil-winrm     
+        key-logger     To be determined
+        screen-shot    Take screenshot
+        dump           Credentials dump
+        webcam         Monitor the webcam on target
+        exit, q        Exit the console
+
 username@ResearchProject#
 ```
 ## Resources

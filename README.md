@@ -153,6 +153,15 @@ The console provides the following commands/options (demonstrating various post-
   - Invokes the scheduled task for webcam.ps1 through evil-winrm.
   - webcam.ps1 runs VLC as a background process and makes the webcam feed accessible through HTTP.
 
+- **screen-stream** \
+  Receives real-time desktop screen streaming from the target:
+
+  - Uses DXGI (Desktop Duplication API) to capture the desktop at ~30 FPS directly from the GPU.
+  - Attempts to establish a TCP connection to the attacker's IP (192.168.0.1) on port 8888.
+  - On the attacker side, running the `screen-stream` command starts `screen_receiver.py`, which listens on port 8888.
+  - The receiver decodes incoming frames and displays them in real-time, providing live desktop monitoring of the target machine.
+  
+
 ## Key Techniques Demonstrated
 - Early Defender exclusion to bypass real-time scanning
 - Persistence via Startup folder and scheduled tasks
@@ -223,6 +232,7 @@ sudo nmcli connection up "Wired connection 2"
 ```bash
 sudo apt update
 sudo apt install vlc
+sudo apt install python3-opencv
 ```
 
 ### Network Configuration (Windows 11)

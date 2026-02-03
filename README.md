@@ -298,3 +298,6 @@ username@ResearchProject#
 - https://github.com/Hackplayers/evil-winrm (Evil Winrm)
 - https://github.com/ParrotSec/mimikatz (Mimikatz)
 - https://www.videolan.org (Webcam Monitoring)
+- https://github.com/lclevy/firepwd (Thunderbird credential dump)
+- https://www.thunderbird.net (Officail Thunderbird app download page)
+- https://www.mailenable.com/ (Free Email Server)

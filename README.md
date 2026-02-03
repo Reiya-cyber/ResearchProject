@@ -50,26 +50,6 @@ This project is an educational red team simulation demonstrating the development
 - Worm
 - VM detector
 
-## Roadmap
-- initial script
-    - Download a staging script from github repo
-    - execute the staging script
-    - self-deletion
-- staging script
-    - download needed files from github repo
-        - Windowns defender disabler (or remover)
-        - Keylogger
-        - Screenshots
-        - Credential dump
-        - Remote access 
-- develop tools
-    - keylogger
-    - Screenshots taker
-- obfuscation
-    - av protection
-    - vm desction
-    - disabling firewall and windows defender
-
 
 # Infection Workflow
 
@@ -190,30 +170,30 @@ To detect or prevent this chain:
 
 **Note**: The Python CLI console serves as a unified attacker interface, automating victim discovery and providing menu-driven access to advanced post-exploitation features over the established WinRM channel. All functionality is intended strictly for red teaming and educational purposes in controlled environments.
 
-## Setups
-### Network Configuration (Kali Linux)
+# Setups
+## Network Configuration (Kali Linux)
 
 This project assumes Kali Linux is configured with a **static IPv4 address** on an **internal network adapter** for isolated lab communication.
 
-#### Network layout
+### Network layout
 - **Adapter 1**: NAT / Bridged (Internet access, DHCP)
 - **Adapter 2**: Internal Network (Lab communication, Static IP)
 
 Kali static IPv4 address: 192.168.0.1/24
 
 
-#### 1. Identify network interfaces
+### 1. Identify network interfaces
 List available interfaces and NetworkManager connections:
 ```bash
 ip a
 nmcli device status
 nmcli connection show
 ```
-#### 2. Bind the internal connection to the internal interface
+### 2. Bind the internal connection to the internal interface
 ```bash
 sudo nmcli connection modify "Wired connection 2" connection.interface-name eth1
 ```
-#### 3. Configure static IPv4 address
+### 3. Configure static IPv4 address
 ```bash
 sudo nmcli connection modify "Wired connection 2" \
   ipv4.method manual \
@@ -222,7 +202,7 @@ sudo nmcli connection modify "Wired connection 2" \
   ipv4.dns "" \
   ipv4.never-default yes
 ```
-#### 4. Apply the configuration
+### 4. Apply the configuration
 ```bash
 sudo nmcli connection down "Wired connection 2"
 sudo nmcli connection up "Wired connection 2"
@@ -235,18 +215,145 @@ sudo apt install vlc
 sudo apt install python3-opencv
 ```
 
-### Network Configuration (Windows 11)
+## Network Configuration (Windows 11)
 
 This project assumes the Windows 11 test machine is connected to the **same internal network** as Kali Linux using a **static IPv4 address**.  
 This enables isolated lab communication without exposing services to external networks.
 
-#### Network layout
+### Network layout
 - **Adapter 1**: NAT / Bridged (Internet access, DHCP)
 - **Adapter 2**: Internal Network (Lab communication, Static IP)
 
 Windows 11 static IPv4 address: Any address on 192.168.0.0/24 (exept for 192.168.0.1)
 
-### Running the console on Kali
+## Setup Email system between targets
+
+### Part 1 – MailEnable Server Installation
+
+1. Go to: https://www.mailenable.com  
+   Download **MailEnable Standard Edition** (free version)
+
+2. Run the installer  
+   → When prompted **"Setup has detected that the server may be a domain controller..."** → Click **OK**
+
+3. Welcome → **Next**
+
+4. User/Company information  
+   - Name: `RAT`  
+   - Company: `ResearchProject`  
+   → **Next**
+
+5. License Agreement → **Next**
+
+6. Select Components → leave defaults → **Next**
+
+7. Destination Folder → leave default → **Next**
+
+8. Ready to Install → **Next** → **Next** again
+
+9. Postoffice Configuration  
+   - Postoffice Name: `Default`  
+   - Administrator password: `Pa$$w0rd`  
+   → **Next**
+
+10. Messaging Storage → leave defaults → **Next**
+
+11. Default Domain  
+    - Domain Name: `rat.gr`  
+    - Leave other options default  
+    → **Next**
+
+12. Final screen → **Next**  
+    Installation begins...
+
+13. When finished → **Finish**
+
+14. Launch **MailEnable Administration** (MailEnableAdmin) from Start Menu
+
+### Part 2 – Create Test Mailboxes
+
+1. Open **MailEnable Administration**
+
+2. Go to:  
+   **Messaging Manager** → **Post Offices** → **DEFAULT**
+
+3. Right-click on **Mailboxes** → **New Mailbox**
+
+4. Create first mailbox:  
+   - **Mailbox Name**: `Victim1`  
+   - **Password**: `Pa$$word`  
+   - Leave other settings default  
+   → **OK**
+
+5. Create second mailbox:  
+   - **Mailbox Name**: `Victim2`  
+   - **Password**: `Pa$$word`  
+   - Leave other settings default  
+   → **OK**
+
+### Part 3 – Install Thunderbird Email Client (on client machines)
+
+**Repeat these steps on each client machine (e.g. Victim1 and Victim2 Windows 11 VMs)**
+
+1. Go to: https://www.thunderbird.net
+
+2. Download the installer
+
+3. Run the installer  
+   - Welcome → **Next**  
+   - Setup Type: **Standard** → **Next**  
+   - Installation path: leave default → **Install**
+
+4. Launch Thunderbird after installation
+
+5. In the "Set up your existing email address" screen:  
+   - Your name: `Victim1`  
+   - Email address: `Victim1@rat.gr`  
+   - Password: `Pa$$w0rd`  
+   → Click **Configure manually**
+
+6. Manual configuration settings:
+
+   **Incoming server (IMAP)**  
+   - Protocol: **IMAP**  
+   - Hostname: `192.168.0.10`  
+   - Port: **143**  
+   - Connection security: **None**  
+   - Authentication method: **Normal password**  
+   - Username: `Victim1`  *(just the mailbox name – NOT @rat.gr)*
+
+   **Outgoing server (SMTP)**  
+   - Hostname: `192.168.0.10`  
+   - Port: **25**  
+   - Connection security: **None**  
+   - Authentication method: **Normal password**  
+   - Username: `Victim1`
+
+7. Click **Re-test**
+
+8. If Thunderbird says:  
+   *"The following settings were found by probing the given server"*  
+   → Click **Done**
+
+9. Security warning appears → Click **I understand the risks** → **Confirm**
+
+10. Click **Finish**
+
+11. Skip any integration / address book / calendar prompts
+
+12. Repeat the entire Thunderbird setup process for **Victim2**  
+    - Name: `Victim2`  
+    - Email: `Victim2@rat.gr`  
+    - Password: `Pa$$word`  
+    - Username (incoming & outgoing): `Victim2`  
+    - All other settings identical
+
+### Quick Test
+
+- From Victim1 Thunderbird: Compose email to `Victim2@rat.gr` and send
+- From Victim2 Thunderbird: Check inbox — message should arrive
+
+## Running the console on Kali
 1. Navigate to the project directory
 ```bash
 cd ~/Research_Project/Attacker

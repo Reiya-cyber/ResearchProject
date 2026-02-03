@@ -291,7 +291,30 @@ Windows 11 static IPv4 address: Any address on 192.168.0.0/24 (exept for 192.168
    - Leave other settings default  
    → **OK**
 
-### Part 3 – Install Thunderbird Email Client (on client machines)
+### Part 3 - Firewall Setting
+1. Press `Win + S` → type **Windows Defender Firewall** → open **Windows Defender Firewall with Advanced Security**
+
+2. In the left pane, click **Inbound Rules**
+
+3. In the right pane, click **New Rule...**
+
+4. **Rule Type**: Select **Port** → **Next**
+
+5. **Protocol and Ports**:  
+   - Protocol: **TCP**  
+   - Specific local ports: `25,143`  
+   → **Next**
+
+6. **Action**: Select **Allow the connection** → **Next**
+
+7. **Profile**: Check **Domain**, **Private**, and **Public** 
+→ **Next**
+
+8. **Name**: Enter  
+   `Allow SMTP and IMAP`  
+   → **Finish**
+
+### Part 4 – Install Thunderbird Email Client (on client machines)
 
 **Repeat these steps on each client machine (e.g. Victim1 and Victim2 Windows 11 VMs)**
 
@@ -347,6 +370,30 @@ Windows 11 static IPv4 address: Any address on 192.168.0.0/24 (exept for 192.168
     - Password: `Pa$$word`  
     - Username (incoming & outgoing): `Victim2`  
     - All other settings identical
+
+### Part 5 – Create Personal Address Book Entry (Victim1 → Victim2)
+
+**Performed on Victim1's Thunderbird**
+
+1. Open Thunderbird on Victim1's machine
+
+2. In the left sidebar, click **Address Book**  
+   (If you don't see it, go to menu → **Tools** → **Address Book**, or press `Ctrl+Shift+B`)
+
+3. In the Address Book window:  
+   - Make sure **Personal Address Book** is selected in the left pane  
+     (it should already be there by default)
+
+4. Click the **New Contact** button  
+   (or go to **File** → **New** → **Contact**)
+
+5. Fill in the contact details:
+
+   - **Name** / **Display Name**: `Victim2` 
+   - **First Name**: `Victim2` (optional)
+   - **Email**: `Victim2@rat.gr` 
+
+6. Click **OK** to save the contact
 
 ### Quick Test
 

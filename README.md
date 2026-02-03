@@ -230,11 +230,11 @@ Windows 11 static IPv4 address: Any address on 192.168.0.0/24 (exept for 192.168
 
 ### Part 1 – MailEnable Server Installation
 
-1. Go to: https://www.mailenable.com  
+1. On Victim1 Windows 11, go to: https://www.mailenable.com  
    Download **MailEnable Standard Edition** (free version)
 
 2. Run the installer  
-   → When prompted **"Setup has detected that the server may be a domain controller..."** → Click **OK**
+   → When error prompted **"Setup has detected that ..."** → Click **OK**
 
 3. Welcome → **Next**
 

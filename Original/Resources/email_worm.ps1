@@ -1,4 +1,4 @@
-Install-PackageProvider -Name NuGet -Force
+Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
 
 if (-not (Get-Module -ListAvailable -Name PSSQLite)) {
     Install-Module -Name PSSQLite -Scope CurrentUser -Force 

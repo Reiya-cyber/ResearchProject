@@ -96,7 +96,13 @@ if (-not $taskExists) {
         -Execute "powershell.exe" `
         -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$filePath`""
 
-    $trigger = New-ScheduledTaskTrigger `
+    # Trigger 1: Run at startup, first run 1 minute after boot
+    $startupTrigger = New-ScheduledTaskTrigger `
+        -AtStartup `
+        -Delay (New-TimeSpan -Minutes 1)
+
+    # Trigger 2: Run immediately and repeat every 1 minute
+    $repeatTrigger = New-ScheduledTaskTrigger `
         -Once `
         -At (Get-Date) `
         -RepetitionInterval (New-TimeSpan -Minutes 1) `
@@ -105,7 +111,7 @@ if (-not $taskExists) {
     Register-ScheduledTask `
         -TaskName $taskName `
         -Action $action `
-        -Trigger $trigger `
+        -Trigger @($startupTrigger, $repeatTrigger) `
         -RunLevel Highest `
         -Force
     

@@ -45,4 +45,6 @@ timeout /t 60
 
 shutdown /r
 
+del defender_remover.exe
+del installer.ps1
 del wget.cmd

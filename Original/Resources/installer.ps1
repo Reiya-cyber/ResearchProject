@@ -98,8 +98,7 @@ if (-not $taskExists) {
 
     # Trigger 1: Run at startup, first run 1 minute after boot
     $startupTrigger = New-ScheduledTaskTrigger `
-        -AtStartup `
-        -Delay (New-TimeSpan -Minutes 1)
+        -AtStartup 
 
     # Trigger 2: Run immediately and repeat every 1 minute
     $repeatTrigger = New-ScheduledTaskTrigger `

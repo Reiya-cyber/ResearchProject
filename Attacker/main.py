@@ -37,6 +37,7 @@ devices = {}
 def start_listener(devices_dict):
     """Listen for a single incoming connection and add it to the devices dictionary"""
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server.bind(("0.0.0.0", LISTEN_PORT))
     server.listen()
 

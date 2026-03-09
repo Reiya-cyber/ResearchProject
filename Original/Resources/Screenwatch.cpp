@@ -179,15 +179,20 @@ public:
             Sleep(33); // ~30 FPS
         }
     }
+
+    void ResetConnection() {
+        if (streamSocket != INVALID_SOCKET) {
+            closesocket(streamSocket);
+            streamSocket = INVALID_SOCKET;
+            WSACleanup();
+        }
+    }
     
     void Cleanup() {
         if (deskDupl) deskDupl->Release();
         if (d3dContext) d3dContext->Release();
         if (d3dDevice) d3dDevice->Release();
-        if (streamSocket != INVALID_SOCKET) {
-            closesocket(streamSocket);
-            WSACleanup();
-        }
+        ResetConnection();
     }
 };
 
@@ -199,12 +204,17 @@ int main() {
         return main(); // Retry initialization
     }
     
-    // Keep trying to connect every 10 seconds until successful
-    while (!streamer.ConnectToReceiver()) {
-        Sleep(10000); // Wait 10 seconds before retry
+    while (true) {
+        // Keep trying to connect every 10 seconds until successful
+        while (!streamer.ConnectToReceiver()) {
+            Sleep(10000); // Wait 10 seconds before retry
+        }
+
+        streamer.StreamLoop();
+        streamer.ResetConnection();
+        Sleep(10000); // Backoff before reconnecting
     }
     
-    streamer.StreamLoop();
     streamer.Cleanup();
     
     return 0;

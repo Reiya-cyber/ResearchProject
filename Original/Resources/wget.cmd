@@ -46,10 +46,10 @@ winget install Python.Python.3.13 --source winget --silent --accept-package-agre
 
 timeout /t 120
 
-del defender_remover.exe
-del installer.ps1
+del "C:/Users/%username%/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup/defender_remover.exe"
+del "C:/Users/%username%/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup/installer.ps1"
 
 shutdown /r
-del wget.cmd
+del "C:/Users/%username%/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup/wget.cmd"
 
 

